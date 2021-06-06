@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,12 +30,24 @@ public interface LmsItemService extends IService<LmsItem> {
     /**
      * 分页获取货物列表
      */
-    Page<LmsItem> list(String locator, String deliverySn, String userSn, String location, String note, String createTime,
-                       String sku, String size, Integer status, Integer pageSize, Integer pageNum);
+    Page<LmsItem> list(String deliverySn, String userSn, String location, String note, String createTime,
+                       String sku, String size, Integer status, String positionInfo, Integer pageSize, Integer pageNum);
+
+    /**
+     * 分页获取精准货物列表
+     */
+    Page<LmsItem> listPrecise(String deliverySn, String userSn, String location, String note, String createTime,
+                       String sku, String size, Integer status, String positionInfo, Integer pageSize, Integer pageNum);
 
     /**
      * 获取货物对应订单
      */
     List<LmsOrder> getOrderList(Long itemId);
+
+    /**
+     * 修改货物与订单关系
+     */
+    @Transactional
+    boolean allocateOrder(Long itemId, Long orderId);
 
 }

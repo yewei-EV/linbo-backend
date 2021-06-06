@@ -9,11 +9,13 @@
         <result column="password" property="password" />
         <result column="icon" property="icon" />
         <result column="email" property="email" />
-        <result column="nick_name" property="nickName" />
+        <result column="discord_id" property="discordId" />
         <result column="note" property="note" />
         <result column="create_time" property="createTime" />
         <result column="login_time" property="loginTime" />
         <result column="status" property="status" />
+        <result column="region" property="region" />
+        <result column="user_sn" property="userSn" />
     </resultMap>
 
     <select id="getAdminIdList" resultType="java.lang.Long">
@@ -23,6 +25,10 @@
             ums_role_resource_relation rr
                 LEFT JOIN ums_admin_role_relation ar ON rr.role_id = ar.role_id
         WHERE rr.resource_id=#{resourceId}
+    </select>
+
+    <select id="getAdminCount" resultType="java.lang.Long">
+        SELECT count(*) FROM ums_admin
     </select>
 
 </mapper>

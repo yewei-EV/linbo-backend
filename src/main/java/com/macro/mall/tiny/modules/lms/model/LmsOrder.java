@@ -48,10 +48,7 @@ public class LmsOrder implements Serializable {
     @ApiModelProperty(value = "用户识别码")
     private String userSn;
 
-    @ApiModelProperty(value = "发货地点")
-    private String origin;
-
-    @ApiModelProperty(value = "到货地点")
+    @ApiModelProperty(value = "到货地址")
     private String destination;
 
     @ApiModelProperty(value = "备注信息")

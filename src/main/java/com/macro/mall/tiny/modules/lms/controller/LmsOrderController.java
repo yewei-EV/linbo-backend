@@ -1,14 +1,19 @@
 package com.macro.mall.tiny.modules.lms.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.api.CommonResult;
+import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
+import com.macro.mall.tiny.modules.lms.model.LmsOrderItemRelation;
+import com.macro.mall.tiny.modules.lms.service.LmsItemService;
+import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,16 +32,20 @@ import java.util.List;
 @RequestMapping("/order")
 public class LmsOrderController {
 
-    @Autowired
-    private LmsOrderService lmsOrderService;
+    private final LmsOrderService lmsOrderService;
+
+    public LmsOrderController(LmsOrderService lmsOrderService) {
+        this.lmsOrderService = lmsOrderService;
+    }
 
     @ApiOperation("添加订单")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult create(@RequestBody LmsOrder order) {
         boolean success = lmsOrderService.create(order);
+        lmsOrderService.refreshItemsStatusByOrder(order.getId());
         if (success) {
-            return CommonResult.success(null);
+            return CommonResult.success(order.getId());
         }
         return CommonResult.failed();
     }
@@ -45,6 +54,8 @@ public class LmsOrderController {
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult update(@PathVariable Long id, @RequestBody LmsOrder order) {
+        //更新order对应的item的status
+        lmsOrderService.refreshItemsStatusByOrder(order.getId());
         order.setId(id);
         boolean success = lmsOrderService.updateById(order);
         if (success) {
@@ -79,7 +90,6 @@ public class LmsOrderController {
                                                   @RequestParam(value = "action", required = false) String action,
                                                   @RequestParam(value = "deliverySn", required = false) String deliverySn,
                                                   @RequestParam(value = "userSn", required = false) String userSn,
-                                                  @RequestParam(value = "origin", required = false) String origin,
                                                   @RequestParam(value = "destination", required = false) String destination,
                                                   @RequestParam(value = "note", required = false) String note,
                                                   @RequestParam(value = "createTime", required = false) String createTime,
@@ -88,7 +98,7 @@ public class LmsOrderController {
                                                   @RequestParam(value = "paymentTime", required = false) String paymentTime,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<LmsOrder> orderList = lmsOrderService.list(id, action, deliverySn, userSn, origin, destination, note,
+        Page<LmsOrder> orderList = lmsOrderService.list(id, action, deliverySn, userSn, destination, note,
                 createTime, status, paymentStatus, paymentTime, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(orderList));
     }

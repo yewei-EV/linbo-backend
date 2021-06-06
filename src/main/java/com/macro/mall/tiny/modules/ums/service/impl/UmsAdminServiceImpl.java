@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.macro.mall.tiny.common.exception.Asserts;
+import com.macro.mall.tiny.common.service.CommonService;
 import com.macro.mall.tiny.domain.AdminUserDetails;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
 import com.macro.mall.tiny.modules.ums.dto.UpdateAdminPasswordParam;
@@ -60,6 +61,10 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     private UmsRoleMapper roleMapper;
     @Autowired
     private UmsResourceMapper resourceMapper;
+    @Autowired
+    private UmsAdminMapper adminMapper;
+    @Autowired
+    private CommonService commonService;
 
     @Override
     public UmsAdmin getAdminByUsername(String username) {
@@ -92,6 +97,8 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         //将密码进行加密操作
         String encodePassword = passwordEncoder.encode(umsAdmin.getPassword());
         umsAdmin.setPassword(encodePassword);
+        Long userCount = adminMapper.getAdminCount();
+        umsAdmin.setUserSn(commonService.generateRandomStringBySeed(Math.toIntExact(userCount)));
         baseMapper.insert(umsAdmin);
         return umsAdmin;
     }
@@ -158,7 +165,7 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         LambdaQueryWrapper<UmsAdmin> lambda = wrapper.lambda();
         if(StrUtil.isNotEmpty(keyword)){
             lambda.like(UmsAdmin::getUsername,keyword);
-            lambda.or().like(UmsAdmin::getNickName,keyword);
+            lambda.or().like(UmsAdmin::getDiscordId,keyword);
         }
         return page(page,wrapper);
     }

@@ -2,6 +2,8 @@ package com.macro.mall.tiny.modules.lms.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
@@ -29,8 +31,6 @@ public class LmsItem implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    private String locator;
-
     @ApiModelProperty(value = "运单号")
     private String deliverySn;
 
@@ -55,5 +55,7 @@ public class LmsItem implements Serializable {
     @ApiModelProperty(value = "货物状态：0->未入库；1->已入库")
     private Integer status;
 
+    @ApiModelProperty(value = "位置信息")
+    private String positionInfo;
 
 }

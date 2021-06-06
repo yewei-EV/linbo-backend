@@ -1,11 +1,16 @@
 package com.macro.mall.tiny.modules.lms.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
 import com.macro.mall.tiny.modules.lms.mapper.LmsOrderMapper;
+import com.macro.mall.tiny.modules.lms.model.LmsOrderItemRelation;
+import com.macro.mall.tiny.modules.lms.service.LmsItemService;
+import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,16 @@ import java.util.Date;
 @Service
 public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> implements LmsOrderService {
 
+    private final LmsItemService lmsItemService;
+
+    private final LmsOrderItemRelationService lmsOrderItemRelationService;
+
+    public LmsOrderServiceImpl(LmsItemService lmsItemService, LmsOrderItemRelationService lmsOrderItemRelationService) {
+        this.lmsItemService = lmsItemService;
+        this.lmsOrderItemRelationService = lmsOrderItemRelationService;
+    }
+
+
     @Override
     public boolean create(LmsOrder order) {
         order.setCreateTime(new Date());
@@ -36,11 +51,12 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     }
 
     @Override
-    public Page<LmsOrder> list(Long id, String action, String deliverySn, String userSn, String origin, String destination,
+    public Page<LmsOrder> list(Long id, String action, String deliverySn, String userSn, String destination,
                                String note, String createTime, Integer status, Integer paymentStatus, String paymentTime,
                                Integer pageSize, Integer pageNum) {
         Page<LmsOrder> page = new Page<>(pageNum,pageSize);
         QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("create_time");
         LambdaQueryWrapper<LmsOrder> lambda = wrapper.lambda();
         if(id!=null){
             lambda.eq(LmsOrder::getId, id);
@@ -53,9 +69,6 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         }
         if(StrUtil.isNotEmpty(userSn)){
             lambda.eq(LmsOrder::getUserSn, userSn);
-        }
-        if(StrUtil.isNotEmpty(origin)){
-            lambda.eq(LmsOrder::getOrigin, origin);
         }
         if(StrUtil.isNotEmpty(destination)){
             lambda.like(LmsOrder::getDestination, destination);
@@ -79,5 +92,20 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         return page(page,wrapper);
     }
 
+    @Override
+    public boolean refreshItemsStatusByOrder(Long orderId) {
+        LmsOrder order = this.getById(orderId);
+        QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(LmsOrderItemRelation::getOrderId, orderId);
+        List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
+        if (!CollectionUtil.isEmpty(list)) {
+            for (LmsOrderItemRelation lmsOrderItemRelation : list) {
+                LmsItem item = lmsItemService.getById(lmsOrderItemRelation.getItemId());
+                item.setStatus(order.getStatus());
+                lmsItemService.updateById(item);
+            }
+        }
+        return true;
+    }
 
 }

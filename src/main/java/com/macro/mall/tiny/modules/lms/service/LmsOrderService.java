@@ -29,8 +29,13 @@ public interface LmsOrderService extends IService<LmsOrder> {
     /**
      * 分页获取订单列表
      */
-    Page<LmsOrder> list(Long id, String action, String deliverySn, String userSn, String origin, String destination, String note,
+    Page<LmsOrder> list(Long id, String action, String deliverySn, String userSn, String destination, String note,
                         String createTime, Integer status, Integer paymentStatus, String paymentTime, Integer pageSize,
                         Integer pageNum);
+
+    /**
+     * 根据订单状态来更新货物状态
+     */
+    boolean refreshItemsStatusByOrder(Long orderId);
 
 }

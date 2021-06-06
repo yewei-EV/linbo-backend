@@ -39,8 +39,8 @@ public class UmsAdmin implements Serializable {
     @ApiModelProperty(value = "邮箱")
     private String email;
 
-    @ApiModelProperty(value = "昵称")
-    private String nickName;
+    @ApiModelProperty(value = "Discord ID")
+    private String discordId;
 
     @ApiModelProperty(value = "备注信息")
     private String note;
@@ -54,5 +54,10 @@ public class UmsAdmin implements Serializable {
     @ApiModelProperty(value = "帐号启用状态：0->禁用；1->启用")
     private Integer status;
 
+    @ApiModelProperty(value = "地区（管理用）")
+    private String region;
+
+    @ApiModelProperty(value = "识别码（用户用）")
+    private String userSn;
 
 }

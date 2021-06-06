@@ -25,8 +25,10 @@ public class UmsAdminParam {
     @Email
     @ApiModelProperty(value = "邮箱")
     private String email;
-    @ApiModelProperty(value = "用户昵称")
-    private String nickName;
+    @ApiModelProperty(value = "Discord ID")
+    private String discordId;
     @ApiModelProperty(value = "备注")
     private String note;
+    @ApiModelProperty(value = "地区")
+    private String region;
 }

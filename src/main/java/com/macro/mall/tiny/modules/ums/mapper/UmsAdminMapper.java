@@ -21,4 +21,6 @@ public interface UmsAdminMapper extends BaseMapper<UmsAdmin> {
      */
     List<Long> getAdminIdList(@Param("resourceId") Long resourceId);
 
+    Long getAdminCount();
+
 }
