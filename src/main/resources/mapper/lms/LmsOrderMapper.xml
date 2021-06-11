@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.macro.mall.tiny.modules.lms.model.LmsOrder">
         <id column="id" property="id" />
-        <result column="action" property="action" />
+        <result column="order_action" property="orderAction" />
         <result column="weight" property="weight" />
         <result column="weight_unit" property="weightUnit" />
         <result column="amount" property="amount" />
@@ -15,16 +15,23 @@
         <result column="destination" property="destination" />
         <result column="note" property="note" />
         <result column="create_time" property="createTime" />
-        <result column="status" property="status" />
+        <result column="order_status" property="orderStatus" />
         <result column="payment_status" property="paymentStatus" />
         <result column="payment_time" property="paymentTime" />
         <result column="price" property="price" />
+        <result column="new_delivery_sn" property="newDeliverySn" />
     </resultMap>
 
     <select id="getOrderList" resultType="com.macro.mall.tiny.modules.lms.model.LmsOrder">
         select o.*
         from lms_order_item_relation oi left join lms_order o on oi.order_id = o.id
         where oi.item_id = #{itemId}
+    </select>
+
+    <select id="getOrderPriceCount" resultType="java.lang.Float">
+        select sum(price)
+        from lms_order
+        where location = #{location} and payment_time > #{date}
     </select>
 
 </mapper>

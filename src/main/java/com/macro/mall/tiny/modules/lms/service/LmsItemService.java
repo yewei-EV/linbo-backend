@@ -28,6 +28,11 @@ public interface LmsItemService extends IService<LmsItem> {
     boolean delete(List<Long> ids);
 
     /**
+     * 修改货物状态
+     */
+    boolean updateItemStatus(LmsItem item, String orderAction);
+
+    /**
      * 分页获取货物列表
      */
     Page<LmsItem> list(String deliverySn, String userSn, String location, String note, String createTime,
@@ -49,5 +54,15 @@ public interface LmsItemService extends IService<LmsItem> {
      */
     @Transactional
     boolean allocateOrder(Long itemId, Long orderId);
+
+    /**
+     * 获取货物统计
+     */
+    Long fetchItemCount(String location, String date, String statusStart, String statusEnd, String userSn);
+
+    /**
+     * 修改货物状态
+     */
+    Boolean modifyItemStatus(List<Long> ids, String newStatus);
 
 }

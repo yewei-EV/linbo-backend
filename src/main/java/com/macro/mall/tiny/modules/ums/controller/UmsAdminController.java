@@ -97,6 +97,8 @@ public class UmsAdminController {
         data.put("menus", roleService.getMenuList(umsAdmin.getId()));
         data.put("icon", umsAdmin.getIcon());
         data.put("id", umsAdmin.getId());
+        data.put("region", umsAdmin.getRegion());
+        data.put("userSn", umsAdmin.getUserSn());
 
         List<UmsRole> roleList = adminService.getRoleList(umsAdmin.getId());
         if(CollUtil.isNotEmpty(roleList)){

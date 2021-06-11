@@ -36,6 +36,11 @@ public interface LmsOrderService extends IService<LmsOrder> {
     /**
      * 根据订单状态来更新货物状态
      */
-    boolean refreshItemsStatusByOrder(Long orderId);
+    boolean refreshItemsStatusByOrder(Long orderId, LmsOrder order);
+
+    /**
+     * 获取货物统计
+     */
+    Float fetchOrderPriceCount(String location, String date);
 
 }

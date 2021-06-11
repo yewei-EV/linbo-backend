@@ -3,6 +3,7 @@ package com.macro.mall.tiny.modules.lms.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.modules.lms.mapper.LmsOrderMapper;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
@@ -12,7 +13,7 @@ import com.macro.mall.tiny.modules.lms.model.LmsOrderItemRelation;
 import com.macro.mall.tiny.modules.lms.service.LmsItemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
-import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,10 +33,13 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
 
     private final LmsOrderMapper lmsOrderMapper;
 
+    private final LmsItemMapper lmsItemMapper;
+
     private final LmsOrderItemRelationService lmsOrderItemRelationService;
 
-    public LmsItemServiceImpl(LmsOrderMapper lmsOrderMapper, LmsOrderItemRelationService lmsOrderItemRelationService) {
+    public LmsItemServiceImpl(LmsOrderMapper lmsOrderMapper, LmsItemMapper lmsItemMapper, LmsOrderItemRelationService lmsOrderItemRelationService) {
         this.lmsOrderMapper = lmsOrderMapper;
+        this.lmsItemMapper = lmsItemMapper;
         this.lmsOrderItemRelationService = lmsOrderItemRelationService;
     }
 
@@ -56,8 +60,54 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     }
 
     @Override
+    public boolean updateItemStatus(LmsItem item, String orderAction) {
+        // handle item pending status
+        if (item.getItemStatus() == 3) {
+            switch (orderAction) {
+                case "0":
+                case "6":
+                case "7":
+                    item.setItemStatus(4);
+                    break;
+                case "1":
+                    item.setItemStatus(5);
+                    break;
+                case "2":
+                    item.setItemStatus(6);
+                    break;
+                case "3":
+                    item.setItemStatus(7);
+                    break;
+                case "4":
+                    item.setItemStatus(8);
+                    break;
+                case "5":
+                    item.setItemStatus(9);
+                    break;
+                default:
+                    item.setItemStatus(3);
+            }
+        } else if (item.getItemStatus() == 12) {
+            switch (orderAction) {
+                case "0":
+                    item.setItemStatus(14);
+                    break;
+                case "6":
+                    item.setItemStatus(13);
+                    break;
+                case "7":
+                    item.setItemStatus(15);
+                    break;
+                default:
+                    item.setItemStatus(12);
+            }
+        }
+        return this.updateById(item);
+    }
+
+    @Override
     public Page<LmsItem> list(String deliverySn, String userSn, String location, String note, String createTime,
-                              String sku, String size, Integer status, String positionInfo, Integer pageSize,
+                              String sku, String size, Integer itemStatus, String positionInfo, Integer pageSize,
                               Integer pageNum) {
         Page<LmsItem> page = new Page<>(pageNum,pageSize);
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
@@ -85,8 +135,8 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         if(StrUtil.isNotEmpty(size)){
             lambda.eq(LmsItem::getSize, size);
         }
-        if(status!=null){
-            lambda.eq(LmsItem::getStatus, status);
+        if(itemStatus!=null){
+            lambda.eq(LmsItem::getItemStatus, itemStatus);
         }
         if(StrUtil.isNotEmpty(positionInfo)){
             lambda.like(LmsItem::getPositionInfo, positionInfo);
@@ -96,7 +146,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
 
     @Override
     public Page<LmsItem> listPrecise(String deliverySn, String userSn, String location, String note, String createTime,
-                              String sku, String size, Integer status, String positionInfo, Integer pageSize,
+                              String sku, String size, Integer itemStatus, String positionInfo, Integer pageSize,
                               Integer pageNum) {
         Page<LmsItem> page = new Page<>(pageNum,pageSize);
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
@@ -124,8 +174,8 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         if(StrUtil.isNotEmpty(size)){
             lambda.eq(LmsItem::getSize, size);
         }
-        if(status!=null){
-            lambda.eq(LmsItem::getStatus, status);
+        if(itemStatus!=null){
+            lambda.eq(LmsItem::getItemStatus, itemStatus);
         }
         if(StrUtil.isNotEmpty(positionInfo)){
             lambda.eq(LmsItem::getPositionInfo, positionInfo);
@@ -155,6 +205,37 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Long fetchItemCount(String location, String date, String statusStart, String statusEnd, String userSn) {
+        QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
+        if (StrUtil.isNotEmpty(location)) {
+            lambda.eq(LmsItem::getLocation, location);
+        }
+        if (StrUtil.isNotEmpty(date)) {
+            lambda.like(LmsItem::getCreateTime, date);
+        }
+        if (StrUtil.isNotEmpty(statusStart) && StrUtil.isNotEmpty(statusEnd)) {
+            lambda.ge(LmsItem::getItemStatus, statusStart);
+            lambda.le(LmsItem::getItemStatus, statusEnd);
+        }
+        if (StrUtil.isNotEmpty(userSn)) {
+            lambda.eq(LmsItem::getUserSn, userSn);
+        }
+        return (long) lmsItemMapper.selectList(lambda).size();
+    }
+
+    @Override
+    public Boolean modifyItemStatus(List<Long> ids, String newStatus) {
+        for (Long id : ids) {
+            LambdaUpdateWrapper<LmsItem> itemUpdateWrapper = new LambdaUpdateWrapper<LmsItem>();
+            itemUpdateWrapper.eq(LmsItem::getId, id)
+                    .set(LmsItem::getItemStatus, newStatus);
+            this.update(itemUpdateWrapper);
+        }
+        return true;
     }
 
 }

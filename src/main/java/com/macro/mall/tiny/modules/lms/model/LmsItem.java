@@ -53,7 +53,7 @@ public class LmsItem implements Serializable {
     private String size;
 
     @ApiModelProperty(value = "货物状态：0->未入库；1->已入库")
-    private Integer status;
+    private Integer itemStatus;
 
     @ApiModelProperty(value = "位置信息")
     private String positionInfo;

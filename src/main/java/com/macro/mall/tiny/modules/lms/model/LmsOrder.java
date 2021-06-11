@@ -31,13 +31,16 @@ public class LmsOrder implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "订单操作")
-    private String action;
+    private String orderAction;
 
     @ApiModelProperty(value = "重量")
     private BigDecimal weight;
 
     @ApiModelProperty(value = "重量单位：0->lbs；1->kg")
     private Integer weightUnit;
+
+    @ApiModelProperty(value = "位置")
+    private String location;
 
     @ApiModelProperty(value = "货物数量")
     private Integer amount;
@@ -58,7 +61,7 @@ public class LmsOrder implements Serializable {
     private Date createTime;
 
     @ApiModelProperty(value = "订单状态")
-    private Integer status;
+    private Integer orderStatus;
 
     @ApiModelProperty(value = "支付状态：0->未定价；1->待支付 2->未支付 3->支付失败 4->支付取消")
     private Integer paymentStatus;
@@ -69,5 +72,10 @@ public class LmsOrder implements Serializable {
     @ApiModelProperty(value = "价格")
     private BigDecimal price;
 
+    @ApiModelProperty(value = "快递单号")
+    private String newDeliverySn;
+
+    @ApiModelProperty(value = "附件")
+    private String attachment;
 
 }

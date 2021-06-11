@@ -12,8 +12,12 @@ import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.NumberUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,6 +65,17 @@ public class LmsItemController {
         return CommonResult.failed();
     }
 
+    @ApiOperation("修改货物状态")
+    @RequestMapping(value = "/updateStatus/{orderAction}", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateItemStatus(@PathVariable String orderAction, @RequestBody LmsItem item) {
+        boolean success = lmsItemService.updateItemStatus(item, orderAction);
+        if (success) {
+            return CommonResult.success(null);
+        }
+        return CommonResult.failed();
+    }
+
     @ApiOperation("批量删除货物")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody
@@ -90,12 +105,12 @@ public class LmsItemController {
                                                   @RequestParam(value = "createTime", required = false) String createTime,
                                                   @RequestParam(value = "sku", required = false) String sku,
                                                   @RequestParam(value = "size", required = false) String size,
-                                                  @RequestParam(value = "status", required = false) Integer status,
+                                                  @RequestParam(value = "itemStatus", required = false) Integer itemStatus,
                                                   @RequestParam(value = "positionInfo", required = false) String positionInfo,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
         Page<LmsItem> itemList = lmsItemService.list(deliverySn, userSn, location, note, createTime, sku, size,
-                status, positionInfo, pageSize, pageNum);
+                itemStatus, positionInfo, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(itemList));
     }
 
@@ -109,12 +124,12 @@ public class LmsItemController {
                                                   @RequestParam(value = "createTime", required = false) String createTime,
                                                   @RequestParam(value = "sku", required = false) String sku,
                                                   @RequestParam(value = "size", required = false) String size,
-                                                  @RequestParam(value = "status", required = false) Integer status,
+                                                  @RequestParam(value = "itemStatus", required = false) Integer itemStatus,
                                                   @RequestParam(value = "positionInfo", required = false) String positionInfo,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
         Page<LmsItem> itemList = lmsItemService.listPrecise(deliverySn, userSn, location, note, createTime, sku, size,
-                status, positionInfo, pageSize, pageNum);
+                itemStatus, positionInfo, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(itemList));
     }
 
@@ -131,11 +146,44 @@ public class LmsItemController {
     @ResponseBody
     public CommonResult allocateOrder(@RequestBody LmsAllocateParam lmsAllocateParam) {
         boolean result = lmsItemService.allocateOrder(lmsAllocateParam.getItemId(), lmsAllocateParam.getOrderId());
-        lmsOrderService.refreshItemsStatusByOrder( lmsAllocateParam.getOrderId());
         if (result) {
             return CommonResult.success(true);
         }
         return CommonResult.failed();
+    }
+
+    @ApiOperation("获取货物统计数据")
+    @RequestMapping(value = "/itemCount", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<Long> itemCount(@RequestParam(value = "dayOffset", required = false) Integer dayOffset,
+                                        @RequestParam(value = "location", required = false) String location,
+                                        @RequestParam(value = "statusRange", required = false) String statusRange,
+                                        @RequestParam(value = "userSn", required = false) String userSn) {
+        String dateString = "";
+        if (!ObjectUtils.isEmpty(dayOffset)) {
+            dateString = LocalDate.now().minusDays(dayOffset).toString();
+        }
+        String statusStart = "";
+        String statusEnd = "";
+        String[] strings = statusRange.split(",");
+        if (strings.length > 1) {
+            statusStart = strings[0];
+            statusEnd = strings[1];
+        } else {
+            statusStart = strings[0];
+            statusEnd = strings[0];
+        }
+        Long result = lmsItemService.fetchItemCount(location, dateString, statusStart, statusEnd, userSn);
+        return CommonResult.success(result);
+    }
+
+    @ApiOperation("获取货物统计数据")
+    @RequestMapping(value = "/modifyStatus", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<Boolean> modifyStatus(@RequestParam(value = "ids") List<Long> ids,
+                                        @RequestParam(value = "newStatus", required = false) String newStatus) {
+        Boolean result = lmsItemService.modifyItemStatus(ids, newStatus);
+        return CommonResult.success(result);
     }
 
 }

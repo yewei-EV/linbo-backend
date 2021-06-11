@@ -13,7 +13,13 @@
         <result column="create_time" property="createTime" />
         <result column="sku" property="sku" />
         <result column="size" property="size" />
-        <result column="status" property="status" />
+        <result column="item_status" property="itemStatus" />
     </resultMap>
+
+    <select id="getItemCount" resultType="java.lang.Long">
+        select count(*)
+        from lms_item
+        where location = #{location} and create_time like #{date} and status = #{status}
+    </select>
 
 </mapper>

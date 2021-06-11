@@ -33,9 +33,12 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
 
     private final LmsOrderItemRelationService lmsOrderItemRelationService;
 
-    public LmsOrderServiceImpl(LmsItemService lmsItemService, LmsOrderItemRelationService lmsOrderItemRelationService) {
+    private final LmsOrderMapper lmsOrderMapper;
+
+    public LmsOrderServiceImpl(LmsItemService lmsItemService, LmsOrderItemRelationService lmsOrderItemRelationService, LmsOrderMapper lmsOrderMapper) {
         this.lmsItemService = lmsItemService;
         this.lmsOrderItemRelationService = lmsOrderItemRelationService;
+        this.lmsOrderMapper = lmsOrderMapper;
     }
 
 
@@ -51,8 +54,8 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     }
 
     @Override
-    public Page<LmsOrder> list(Long id, String action, String deliverySn, String userSn, String destination,
-                               String note, String createTime, Integer status, Integer paymentStatus, String paymentTime,
+    public Page<LmsOrder> list(Long id, String orderAction, String deliverySn, String userSn, String destination,
+                               String note, String createTime, Integer orderStatus, Integer paymentStatus, String paymentTime,
                                Integer pageSize, Integer pageNum) {
         Page<LmsOrder> page = new Page<>(pageNum,pageSize);
         QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
@@ -61,8 +64,8 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         if(id!=null){
             lambda.eq(LmsOrder::getId, id);
         }
-        if(StrUtil.isNotEmpty(action)){
-            lambda.eq(LmsOrder::getAction, action);
+        if(StrUtil.isNotEmpty(orderAction)){
+            lambda.eq(LmsOrder::getOrderAction, orderAction);
         }
         if(StrUtil.isNotEmpty(deliverySn)){
             lambda.like(LmsOrder::getDeliverySn, deliverySn);
@@ -79,8 +82,8 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         if(StrUtil.isNotEmpty(createTime)){
             lambda.like(LmsOrder::getCreateTime, createTime);
         }
-        if(status!=null){
-            lambda.eq(LmsOrder::getStatus, status);
+        if(orderStatus!=null){
+            lambda.eq(LmsOrder::getOrderStatus, orderStatus);
         }
         if(paymentStatus!=null){
             lambda.eq(LmsOrder::getPaymentStatus, paymentStatus);
@@ -93,19 +96,31 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     }
 
     @Override
-    public boolean refreshItemsStatusByOrder(Long orderId) {
-        LmsOrder order = this.getById(orderId);
-        QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(LmsOrderItemRelation::getOrderId, orderId);
-        List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
-        if (!CollectionUtil.isEmpty(list)) {
-            for (LmsOrderItemRelation lmsOrderItemRelation : list) {
-                LmsItem item = lmsItemService.getById(lmsOrderItemRelation.getItemId());
-                item.setStatus(order.getStatus());
-                lmsItemService.updateById(item);
+    public boolean refreshItemsStatusByOrder(Long orderId, LmsOrder order) {
+        Integer newItemStatus = 0;
+        if (order.getOrderStatus() == 1) {
+            newItemStatus = 2;
+        } else if (order.getOrderStatus() == 2) {
+            newItemStatus = 3;
+        }
+        if (newItemStatus != 0) {
+            QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
+            wrapper.lambda().eq(LmsOrderItemRelation::getOrderId, orderId);
+            List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
+            if (!CollectionUtil.isEmpty(list)) {
+                for (LmsOrderItemRelation lmsOrderItemRelation : list) {
+                    LmsItem item = lmsItemService.getById(lmsOrderItemRelation.getItemId());
+                    item.setItemStatus(newItemStatus);
+                    lmsItemService.updateItemStatus(item, order.getOrderAction());
+                }
             }
         }
         return true;
+    }
+
+    @Override
+    public Float fetchOrderPriceCount(String location, String date) {
+        return lmsOrderMapper.getOrderPriceCount(location, date);
     }
 
 }

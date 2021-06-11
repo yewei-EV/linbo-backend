@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -43,7 +44,6 @@ public class LmsOrderController {
     @ResponseBody
     public CommonResult create(@RequestBody LmsOrder order) {
         boolean success = lmsOrderService.create(order);
-        lmsOrderService.refreshItemsStatusByOrder(order.getId());
         if (success) {
             return CommonResult.success(order.getId());
         }
@@ -55,7 +55,7 @@ public class LmsOrderController {
     @ResponseBody
     public CommonResult update(@PathVariable Long id, @RequestBody LmsOrder order) {
         //更新order对应的item的status
-        lmsOrderService.refreshItemsStatusByOrder(order.getId());
+        lmsOrderService.refreshItemsStatusByOrder(id, order);
         order.setId(id);
         boolean success = lmsOrderService.updateById(order);
         if (success) {
@@ -87,22 +87,31 @@ public class LmsOrderController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult<CommonPage<LmsOrder>> list(@RequestParam(value = "id", required = false) Long id,
-                                                  @RequestParam(value = "action", required = false) String action,
+                                                  @RequestParam(value = "orderAction", required = false) String orderAction,
                                                   @RequestParam(value = "deliverySn", required = false) String deliverySn,
                                                   @RequestParam(value = "userSn", required = false) String userSn,
                                                   @RequestParam(value = "destination", required = false) String destination,
                                                   @RequestParam(value = "note", required = false) String note,
                                                   @RequestParam(value = "createTime", required = false) String createTime,
-                                                  @RequestParam(value = "status", required = false) Integer status,
+                                                  @RequestParam(value = "orderStatus", required = false) Integer orderStatus,
                                                   @RequestParam(value = "paymentStatus", required = false) Integer paymentStatus,
                                                   @RequestParam(value = "paymentTime", required = false) String paymentTime,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<LmsOrder> orderList = lmsOrderService.list(id, action, deliverySn, userSn, destination, note,
-                createTime, status, paymentStatus, paymentTime, pageSize, pageNum);
+        Page<LmsOrder> orderList = lmsOrderService.list(id, orderAction, deliverySn, userSn, destination, note,
+                createTime, orderStatus, paymentStatus, paymentTime, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(orderList));
     }
 
+    @ApiOperation("获取销售额统计数据")
+    @RequestMapping(value = "/orderPriceCount", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<Float> priceCount(@RequestParam(value = "dayOffset", required = false) Integer dayOffset,
+                                        @RequestParam(value = "location", required = false) String location) {
+        LocalDate date = LocalDate.now().minusDays(dayOffset);
+        Float result = lmsOrderService.fetchOrderPriceCount(location, date.toString());
+        return CommonResult.success(result);
+    }
 
 }
 
