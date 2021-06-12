@@ -205,4 +205,21 @@ public class UmsAdminController {
         List<UmsRole> roleList = adminService.getRoleList(adminId);
         return CommonResult.success(roleList);
     }
+
+
+    @ApiOperation("通过discord Id获取指定用户")
+    @RequestMapping(value = "/discord/{discordId}", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<UmsAdmin> getAdminByDiscordID(@PathVariable String discordId) {
+        UmsAdmin adminList = adminService.getAdminByDiscordId(discordId);
+        return CommonResult.success(adminList);
+    }
+
+    @ApiOperation("通过用户识别码获取指定用户")
+    @RequestMapping(value = "/userSn/{userSn}", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<UmsAdmin> getAdminByUserSn(@PathVariable String userSn) {
+        UmsAdmin adminList = adminService.getAdminByUserSn(userSn);
+        return CommonResult.success(adminList);
+    }
 }

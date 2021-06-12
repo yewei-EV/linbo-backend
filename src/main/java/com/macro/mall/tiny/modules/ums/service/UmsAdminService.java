@@ -23,6 +23,16 @@ public interface UmsAdminService extends IService<UmsAdmin> {
     UmsAdmin getAdminByUsername(String username);
 
     /**
+     * 根据Discord ID获取用户
+     */
+    UmsAdmin getAdminByDiscordId(String discordId);
+
+    /**
+     * 根据用户识别码获取用户
+     */
+    UmsAdmin getAdminByUserSn(String userSn);
+
+    /**
      * 注册功能
      */
     UmsAdmin register(UmsAdminParam umsAdminParam);
@@ -81,4 +91,5 @@ public interface UmsAdminService extends IService<UmsAdmin> {
      * 获取用户信息
      */
     UserDetails loadUserByUsername(String username);
+
 }

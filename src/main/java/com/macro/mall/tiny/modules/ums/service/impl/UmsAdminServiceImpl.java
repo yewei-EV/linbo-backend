@@ -82,6 +82,28 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     }
 
     @Override
+    public UmsAdmin getAdminByDiscordId(String discordId) {
+        QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(UmsAdmin::getDiscordId, discordId);
+        List<UmsAdmin> adminList = list(wrapper);
+        if (adminList != null && adminList.size() > 0) {
+            return adminList.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public UmsAdmin getAdminByUserSn(String userSn) {
+        QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(UmsAdmin::getUserSn, userSn);
+        List<UmsAdmin> adminList = list(wrapper);
+        if (adminList != null && adminList.size() > 0) {
+            return adminList.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public UmsAdmin register(UmsAdminParam umsAdminParam) {
         UmsAdmin umsAdmin = new UmsAdmin();
         BeanUtils.copyProperties(umsAdminParam, umsAdmin);
