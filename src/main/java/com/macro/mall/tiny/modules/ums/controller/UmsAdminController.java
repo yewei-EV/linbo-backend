@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,10 +45,12 @@ public class UmsAdminController {
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult<UmsAdmin> register(@Validated @RequestBody UmsAdminParam umsAdminParam) {
+        umsAdminParam.setIcon("https://hypeeyes-linbo.oss-cn-hongkong.aliyuncs.com/attachment/B0478D3C-A50E-4EA0-BDA5-96F55AA2DCC7.jpg");
         UmsAdmin umsAdmin = adminService.register(umsAdminParam);
         if (umsAdmin == null) {
             return CommonResult.failed();
         }
+        adminService.updateRole(umsAdmin.getId(), Collections.singletonList(9L));
         return CommonResult.success(umsAdmin);
     }
 
