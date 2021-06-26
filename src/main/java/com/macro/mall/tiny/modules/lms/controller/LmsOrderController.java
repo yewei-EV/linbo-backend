@@ -55,7 +55,10 @@ public class LmsOrderController {
     @ResponseBody
     public CommonResult update(@PathVariable Long id, @RequestBody LmsOrder order) {
         //更新order对应的item的status
-        lmsOrderService.refreshItemsStatusByOrder(id, order);
+        LmsOrder currentOrder = lmsOrderService.getById(id);
+        if (!currentOrder.getOrderStatus().equals(order.getOrderStatus())) {
+            lmsOrderService.refreshItemsStatusByOrder(id, order);
+        }
         order.setId(id);
         boolean success = lmsOrderService.updateById(order);
         if (success) {

@@ -13,7 +13,6 @@ import com.macro.mall.tiny.modules.lms.model.LmsOrderItemRelation;
 import com.macro.mall.tiny.modules.lms.service.LmsItemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,7 +52,11 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     public boolean delete(List<Long> ids) {
         for (Long id : ids) {
             QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
-            wrapper.lambda().eq(LmsOrderItemRelation::getItemId,id);
+            wrapper.lambda().eq(LmsOrderItemRelation::getItemId, id);
+            List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
+            for (LmsOrderItemRelation relation: list) {
+                lmsOrderMapper.deleteById(relation.getOrderId());
+            }
             lmsOrderItemRelationService.remove(wrapper);
         }
         return removeByIds(ids);
