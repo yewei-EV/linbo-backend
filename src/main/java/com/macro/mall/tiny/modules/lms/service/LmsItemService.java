@@ -30,7 +30,7 @@ public interface LmsItemService extends IService<LmsItem> {
     /**
      * 修改货物状态
      */
-    boolean updateItemStatus(LmsItem item, String orderAction);
+    String updateItemStatus(LmsItem item, String orderAction);
 
     /**
      * 分页获取货物列表
@@ -65,4 +65,8 @@ public interface LmsItemService extends IService<LmsItem> {
      */
     Boolean modifyItemStatus(List<Long> ids, String newStatus);
 
+    /**
+     * 获取货物对应订单
+     */
+    List<LmsItem> getItemListByOrder(Long orderId);
 }

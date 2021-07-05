@@ -35,11 +35,8 @@ public class LmsItemController {
 
     private final LmsItemService lmsItemService;
 
-    private final LmsOrderService lmsOrderService;
-
-    public LmsItemController(LmsItemService lmsItemService, LmsOrderService lmsOrderService) {
+    public LmsItemController(LmsItemService lmsItemService) {
         this.lmsItemService = lmsItemService;
-        this.lmsOrderService = lmsOrderService;
     }
 
     @ApiOperation("添加货物")
@@ -65,15 +62,26 @@ public class LmsItemController {
         return CommonResult.failed();
     }
 
-    @ApiOperation("修改货物状态")
+    @ApiOperation("修改包裹状态")
     @RequestMapping(value = "/updateStatus/{orderAction}", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult updateItemStatus(@PathVariable String orderAction, @RequestBody LmsItem item) {
-        boolean success = lmsItemService.updateItemStatus(item, orderAction);
-        if (success) {
+        String result = lmsItemService.updateItemStatus(item, orderAction);
+        if (result.equals("成功")) {
             return CommonResult.success(null);
         }
-        return CommonResult.failed();
+        return CommonResult.failed(result);
+    }
+
+    @ApiOperation("通过订单修改包裹状态")
+    @RequestMapping(value = "/updateStatusByOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateItemStatusByOrder(@RequestBody LmsOrder order) {
+        List<LmsItem> items = lmsItemService.getItemListByOrder(order.getId());
+        for (LmsItem item : items) {
+            lmsItemService.updateItemStatus(item, order.getOrderAction());
+        }
+        return CommonResult.success(null);
     }
 
     @ApiOperation("批量删除货物")

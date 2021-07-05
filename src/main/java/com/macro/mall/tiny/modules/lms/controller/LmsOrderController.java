@@ -15,6 +15,7 @@ import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -29,7 +30,7 @@ import java.util.List;
  * @since 2021-05-15
  */
 @Controller
-@Api(tags = "LmsOrderController", description = "订单管理")
+@Api(tags = "LmsOrderController", description = "财务管理")
 @RequestMapping("/order")
 public class LmsOrderController {
 
@@ -54,11 +55,6 @@ public class LmsOrderController {
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult update(@PathVariable Long id, @RequestBody LmsOrder order) {
-        //更新order对应的item的status
-        LmsOrder currentOrder = lmsOrderService.getById(id);
-        if (!currentOrder.getOrderStatus().equals(order.getOrderStatus())) {
-            lmsOrderService.refreshItemsStatusByOrder(id, order);
-        }
         order.setId(id);
         boolean success = lmsOrderService.updateById(order);
         if (success) {
@@ -116,5 +112,23 @@ public class LmsOrderController {
         return CommonResult.success(result);
     }
 
+    @ApiOperation("获取货物统计数据")
+    @RequestMapping(value = "/orderCount", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<Long> orderCount(@RequestParam(value = "statusRange", required = false) String statusRange,
+                                        @RequestParam(value = "userSn", required = false) String userSn) {
+        String statusStart = "";
+        String statusEnd = "";
+        String[] strings = statusRange.split(",");
+        if (strings.length > 1) {
+            statusStart = strings[0];
+            statusEnd = strings[1];
+        } else {
+            statusStart = strings[0];
+            statusEnd = strings[0];
+        }
+        Long result = lmsOrderService.fetchOrderCount(statusStart, statusEnd, userSn);
+        return CommonResult.success(result);
+    }
 }
 

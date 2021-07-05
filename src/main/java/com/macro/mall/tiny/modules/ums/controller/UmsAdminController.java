@@ -16,10 +16,15 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,10 +41,23 @@ public class UmsAdminController {
     private String tokenHeader;
     @Value("${jwt.tokenHead}")
     private String tokenHead;
+
     @Autowired
     private UmsAdminService adminService;
+
     @Autowired
     private UmsRoleService roleService;
+
+    @ApiOperation(value = "用户注册录入")
+    @RequestMapping(value = "/input", method = RequestMethod.GET)
+    @ResponseBody
+    public void input() {
+        try {
+            adminService.input();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @ApiOperation(value = "用户注册")
     @RequestMapping(value = "/register", method = RequestMethod.POST)

@@ -1,6 +1,5 @@
 package com.macro.mall.tiny.modules.lms.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -14,6 +13,7 @@ import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Date;
@@ -29,18 +29,14 @@ import java.util.Date;
 @Service
 public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> implements LmsOrderService {
 
-    private final LmsItemService lmsItemService;
-
     private final LmsOrderItemRelationService lmsOrderItemRelationService;
 
     private final LmsOrderMapper lmsOrderMapper;
 
-    public LmsOrderServiceImpl(LmsItemService lmsItemService, LmsOrderItemRelationService lmsOrderItemRelationService, LmsOrderMapper lmsOrderMapper) {
-        this.lmsItemService = lmsItemService;
+    public LmsOrderServiceImpl(LmsOrderItemRelationService lmsOrderItemRelationService, LmsOrderMapper lmsOrderMapper) {
         this.lmsOrderItemRelationService = lmsOrderItemRelationService;
         this.lmsOrderMapper = lmsOrderMapper;
     }
-
 
     @Override
     public boolean create(LmsOrder order) {
@@ -96,31 +92,34 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     }
 
     @Override
-    public boolean refreshItemsStatusByOrder(Long orderId, LmsOrder order) {
-        Integer newItemStatus = 0;
-        if (order.getOrderStatus() == 1) {
-            newItemStatus = 2;
-        } else if (order.getOrderStatus() == 2) {
-            newItemStatus = 3;
-        }
-        if (newItemStatus != 0) {
-            QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
-            wrapper.lambda().eq(LmsOrderItemRelation::getOrderId, orderId);
-            List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
-            if (!CollectionUtil.isEmpty(list)) {
-                for (LmsOrderItemRelation lmsOrderItemRelation : list) {
-                    LmsItem item = lmsItemService.getById(lmsOrderItemRelation.getItemId());
-                    item.setItemStatus(newItemStatus);
-                    lmsItemService.updateItemStatus(item, order.getOrderAction());
-                }
-            }
-        }
-        return true;
+    public Float fetchOrderPriceCount(String location, String date) {
+        return lmsOrderMapper.getOrderPriceCount(location, date);
     }
 
     @Override
-    public Float fetchOrderPriceCount(String location, String date) {
-        return lmsOrderMapper.getOrderPriceCount(location, date);
+    public boolean checkIfPaid(Long itemId) {
+        QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(LmsOrderItemRelation::getItemId, itemId);
+        List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
+        if (!CollectionUtils.isEmpty(list)) {
+            LmsOrder order = this.getById(list.get(0).getOrderId());
+            return order.getOrderStatus() >= 2;
+        }
+        return false;
+    }
+
+    @Override
+    public Long fetchOrderCount(String statusStart, String statusEnd, String userSn) {
+        QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
+        LambdaQueryWrapper<LmsOrder> lambda = wrapper.lambda();
+        if (StrUtil.isNotEmpty(statusStart) && StrUtil.isNotEmpty(statusEnd)) {
+            lambda.ge(LmsOrder::getOrderStatus, statusStart);
+            lambda.le(LmsOrder::getOrderStatus, statusEnd);
+        }
+        if (StrUtil.isNotEmpty(userSn)) {
+            lambda.eq(LmsOrder::getUserSn, userSn);
+        }
+        return (long) lmsOrderMapper.selectList(lambda).size();
     }
 
 }

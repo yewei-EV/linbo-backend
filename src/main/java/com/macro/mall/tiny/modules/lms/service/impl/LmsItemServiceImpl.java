@@ -13,7 +13,11 @@ import com.macro.mall.tiny.modules.lms.model.LmsOrderItemRelation;
 import com.macro.mall.tiny.modules.lms.service.LmsItemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
+import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +40,13 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
 
     private final LmsOrderItemRelationService lmsOrderItemRelationService;
 
-    public LmsItemServiceImpl(LmsOrderMapper lmsOrderMapper, LmsItemMapper lmsItemMapper, LmsOrderItemRelationService lmsOrderItemRelationService) {
+    private final LmsOrderService lmsOrderService;
+
+    public LmsItemServiceImpl(LmsOrderMapper lmsOrderMapper, LmsItemMapper lmsItemMapper, LmsOrderItemRelationService lmsOrderItemRelationService, LmsOrderService lmsOrderService) {
         this.lmsOrderMapper = lmsOrderMapper;
         this.lmsItemMapper = lmsItemMapper;
         this.lmsOrderItemRelationService = lmsOrderItemRelationService;
+        this.lmsOrderService = lmsOrderService;
     }
 
     @Override
@@ -55,7 +62,9 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             wrapper.lambda().eq(LmsOrderItemRelation::getItemId, id);
             List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
             for (LmsOrderItemRelation relation: list) {
-                lmsOrderMapper.deleteById(relation.getOrderId());
+                if (!ObjectUtils.isEmpty(lmsOrderService.getById(relation.getOrderId()))) {
+                    lmsOrderMapper.deleteById(relation.getOrderId());
+                }
             }
             lmsOrderItemRelationService.remove(wrapper);
         }
@@ -63,9 +72,10 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     }
 
     @Override
-    public boolean updateItemStatus(LmsItem item, String orderAction) {
-        // handle item pending status
-        if (item.getItemStatus() == 3) {
+    public String updateItemStatus(LmsItem item, String orderAction) {
+        if (!StringUtils.isEmpty(orderAction) && (item.getItemStatus() == 1 || item.getItemStatus() == 0)) {
+            item.setItemStatus(2);
+        } else if (item.getItemStatus() == 2) {
             switch (orderAction) {
                 case "0":
                 case "6":
@@ -73,39 +83,115 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                     item.setItemStatus(4);
                     break;
                 case "1":
-                    item.setItemStatus(5);
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(5);
+                    } else {
+                        item.setItemStatus(3);
+                    }
                     break;
                 case "2":
-                    item.setItemStatus(6);
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(6);
+                    } else {
+                        item.setItemStatus(3);
+                    }
                     break;
                 case "3":
-                    item.setItemStatus(7);
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(7);
+                        break;
+                    } else {
+                        item.setItemStatus(3);
+                    }
                     break;
                 case "4":
                     item.setItemStatus(8);
                     break;
                 case "5":
-                    item.setItemStatus(9);
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(9);
+                        break;
+                    } else {
+                        item.setItemStatus(3);
+                    }
                     break;
                 default:
                     item.setItemStatus(3);
             }
+        } else if (item.getItemStatus() == 3) {
+                switch (orderAction) {
+                    case "1":
+                        if (lmsOrderService.checkIfPaid(item.getId())) {
+                            item.setItemStatus(5);
+                        } else {
+                            item.setItemStatus(3);
+                        }
+                        break;
+                    case "2":
+                        if (lmsOrderService.checkIfPaid(item.getId())) {
+                            item.setItemStatus(6);
+                        } else {
+                            item.setItemStatus(3);
+                        }
+                        break;
+                    case "3":
+                        if (lmsOrderService.checkIfPaid(item.getId())) {
+                            item.setItemStatus(7);
+                            break;
+                        } else {
+                            item.setItemStatus(3);
+                        }
+                        break;
+                    case "5":
+                        if (lmsOrderService.checkIfPaid(item.getId())) {
+                            item.setItemStatus(9);
+                            break;
+                        } else {
+                            item.setItemStatus(3);
+                        }
+                        break;
+                    default:
+                        item.setItemStatus(3);
+                }
+        } else if (item.getItemStatus() == 4 || item.getItemStatus() == 5 || item.getItemStatus() == 6
+                || item.getItemStatus() == 7 || item.getItemStatus() == 9) {
+            item.setItemStatus(10);
+        } else if (item.getItemStatus() == 8) {
+            item.setItemStatus(11);
+        } else if (item.getItemStatus() == 10) {
+            item.setItemStatus(12);
         } else if (item.getItemStatus() == 12) {
             switch (orderAction) {
                 case "0":
-                    item.setItemStatus(14);
-                    break;
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(14);
+                        break;
+                    } else {
+                        return "未付款";
+                    }
                 case "6":
-                    item.setItemStatus(13);
-                    break;
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(13);
+                        break;
+                    } else {
+                        return "未付款";
+                    }
                 case "7":
                     item.setItemStatus(15);
                     break;
                 default:
                     item.setItemStatus(12);
             }
+        } else if (item.getItemStatus() == 13 || item.getItemStatus() == 14) {
+            if (lmsOrderService.checkIfPaid(item.getId())) {
+                item.setItemStatus(16);
+            } else {
+                return "未付款";
+            }
+        } else if (item.getItemStatus() == 15) {
+            item.setItemStatus(17);
         }
-        return this.updateById(item);
+        return this.updateById(item)?"成功":"失败";
     }
 
     @Override
@@ -195,7 +281,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     public boolean allocateOrder(Long itemId, Long orderId) {
         //先删除原来的关系
         QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(LmsOrderItemRelation::getOrderId, orderId);
+        wrapper.lambda().eq(LmsOrderItemRelation::getItemId, itemId);
         lmsOrderItemRelationService.remove(wrapper);
         //建立新关系
         if (orderId!=null) {
@@ -233,12 +319,24 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     @Override
     public Boolean modifyItemStatus(List<Long> ids, String newStatus) {
         for (Long id : ids) {
-            LambdaUpdateWrapper<LmsItem> itemUpdateWrapper = new LambdaUpdateWrapper<LmsItem>();
+            LambdaUpdateWrapper<LmsItem> itemUpdateWrapper = new LambdaUpdateWrapper<>();
             itemUpdateWrapper.eq(LmsItem::getId, id)
                     .set(LmsItem::getItemStatus, newStatus);
             this.update(itemUpdateWrapper);
         }
         return true;
+    }
+
+    @Override
+    public List<LmsItem> getItemListByOrder(Long orderId) {
+        QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(LmsOrderItemRelation::getOrderId, orderId);
+        List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
+        List<LmsItem> itemList = new ArrayList<>();
+        for (LmsOrderItemRelation relation: list) {
+            itemList.add(this.getById(relation.getItemId()));
+        }
+        return itemList;
     }
 
 }

@@ -34,13 +34,18 @@ public interface LmsOrderService extends IService<LmsOrder> {
                         Integer pageNum);
 
     /**
-     * 根据订单状态来更新货物状态
-     */
-    boolean refreshItemsStatusByOrder(Long orderId, LmsOrder order);
-
-    /**
      * 获取货物统计
      */
     Float fetchOrderPriceCount(String location, String date);
+
+    /**
+     * 获取已支付订单
+     */
+    boolean checkIfPaid(Long itemId);
+
+    /**
+     * 获取订单数量
+     */
+    Long fetchOrderCount(String statusStart, String statusEnd, String userSn);
 
 }
