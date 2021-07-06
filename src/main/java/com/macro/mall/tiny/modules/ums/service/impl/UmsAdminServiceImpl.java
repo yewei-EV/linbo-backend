@@ -36,6 +36,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -111,7 +115,7 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         umsAdmin.setStatus(1);
         //查询是否有相同用户名的用户
         QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(UmsAdmin::getUsername,umsAdmin.getUsername());
+        wrapper.lambda().eq(UmsAdmin::getUsername, umsAdmin.getUsername());
         List<UmsAdmin> umsAdminList = list(wrapper);
         if (umsAdminList.size() > 0) {
             return null;
@@ -119,10 +123,43 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         //将密码进行加密操作
         String encodePassword = passwordEncoder.encode(umsAdmin.getPassword());
         umsAdmin.setPassword(encodePassword);
-        Long userCount = adminMapper.getAdminCount();
-        umsAdmin.setUserSn(commonService.generateRandomStringBySeed(Math.toIntExact(userCount)));
+
+        //查询是否有相同的User Sn
+        QueryWrapper<UmsAdmin> snWrapper = new QueryWrapper<>();
+        snWrapper.lambda().eq(UmsAdmin::getDiscordId, umsAdmin.getDiscordId());
+        List<UmsAdmin> existUmsAdminList = list(snWrapper);
+        if (existUmsAdminList.size() > 0) {
+            existUmsAdminList.get(0).setCreateTime(new Date());
+            existUmsAdminList.get(0).setUsername(umsAdminParam.getUsername());
+            existUmsAdminList.get(0).setPassword(encodePassword);
+            existUmsAdminList.get(0).setEmail(umsAdminParam.getEmail());
+            umsAdmin = existUmsAdminList.get(0);
+            this.delete(existUmsAdminList.get(0).getId());
+        } else {
+            Long userCount = adminMapper.getAdminCount();
+            umsAdmin.setUserSn(commonService.generateRandomStringBySeed(Math.toIntExact(userCount)));
+        }
         baseMapper.insert(umsAdmin);
         return umsAdmin;
+    }
+
+    @Override
+    public void input() throws IOException {
+        BufferedReader csvReader = new BufferedReader(new FileReader("/Users/kiwi/Downloads/useSn.csv"));
+        String row;
+        while ((row = csvReader.readLine()) != null) {
+            String[] data = row.split(",");
+            // do something with the data
+            if (data[0].equals("识别码") || data.length < 2 || data[1].contains("xF0")) {
+                continue;
+            }
+            UmsAdmin umsAdmin = new UmsAdmin();
+            umsAdmin.setStatus(0);
+            umsAdmin.setDiscordId(data[1]);
+            umsAdmin.setUserSn(data[0]);
+            baseMapper.insert(umsAdmin);
+        }
+        csvReader.close();
     }
 
     @Override

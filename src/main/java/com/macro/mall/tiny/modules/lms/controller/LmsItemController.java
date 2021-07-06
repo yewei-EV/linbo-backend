@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.api.CommonResult;
 import com.macro.mall.tiny.modules.lms.dto.LmsAllocateParam;
+import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
 import com.macro.mall.tiny.modules.lms.service.LmsItemService;
@@ -35,11 +36,8 @@ public class LmsItemController {
 
     private final LmsItemService lmsItemService;
 
-    private final LmsOrderService lmsOrderService;
-
-    public LmsItemController(LmsItemService lmsItemService, LmsOrderService lmsOrderService) {
+    public LmsItemController(LmsItemService lmsItemService) {
         this.lmsItemService = lmsItemService;
-        this.lmsOrderService = lmsOrderService;
     }
 
     @ApiOperation("添加货物")
@@ -65,15 +63,26 @@ public class LmsItemController {
         return CommonResult.failed();
     }
 
-    @ApiOperation("修改货物状态")
+    @ApiOperation("修改包裹状态")
     @RequestMapping(value = "/updateStatus/{orderAction}", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult updateItemStatus(@PathVariable String orderAction, @RequestBody LmsItem item) {
-        boolean success = lmsItemService.updateItemStatus(item, orderAction);
-        if (success) {
+        String result = lmsItemService.updateItemStatus(item, orderAction);
+        if (result.equals("成功")) {
             return CommonResult.success(null);
         }
-        return CommonResult.failed();
+        return CommonResult.failed(result);
+    }
+
+    @ApiOperation("通过订单修改包裹状态")
+    @RequestMapping(value = "/updateStatusByOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateItemStatusByOrder(@RequestBody LmsOrder order) {
+        List<LmsItem> items = lmsItemService.getItemListByOrder(order.getId());
+        for (LmsItem item : items) {
+            lmsItemService.updateItemStatus(item, order.getOrderAction());
+        }
+        return CommonResult.success(null);
     }
 
     @ApiOperation("批量删除货物")
@@ -96,21 +105,10 @@ public class LmsItemController {
     }
 
     @ApiOperation("根据条件分页获取货物列表")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<CommonPage<LmsItem>> list(@RequestParam(value = "deliverySn", required = false) String deliverySn,
-                                                  @RequestParam(value = "userSn", required = false) String userSn,
-                                                  @RequestParam(value = "location", required = false) String location,
-                                                  @RequestParam(value = "note", required = false) String note,
-                                                  @RequestParam(value = "createTime", required = false) String createTime,
-                                                  @RequestParam(value = "sku", required = false) String sku,
-                                                  @RequestParam(value = "size", required = false) String size,
-                                                  @RequestParam(value = "itemStatus", required = false) Integer itemStatus,
-                                                  @RequestParam(value = "positionInfo", required = false) String positionInfo,
-                                                  @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-                                                  @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<LmsItem> itemList = lmsItemService.list(deliverySn, userSn, location, note, createTime, sku, size,
-                itemStatus, positionInfo, pageSize, pageNum);
+    public CommonResult<CommonPage<LmsItem>> list(@RequestBody LmsItemQueryParam lmsItemQueryParam) {
+        Page<LmsItem> itemList = lmsItemService.list(lmsItemQueryParam);
         return CommonResult.success(CommonPage.restPage(itemList));
     }
 

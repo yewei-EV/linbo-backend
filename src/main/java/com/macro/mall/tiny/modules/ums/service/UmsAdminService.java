@@ -10,6 +10,8 @@ import com.macro.mall.tiny.modules.ums.model.UmsRole;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,6 +38,11 @@ public interface UmsAdminService extends IService<UmsAdmin> {
      * 注册功能
      */
     UmsAdmin register(UmsAdminParam umsAdminParam);
+
+    /**
+     * 录入功能
+     */
+    void input() throws IOException;
 
     /**
      * 登录功能

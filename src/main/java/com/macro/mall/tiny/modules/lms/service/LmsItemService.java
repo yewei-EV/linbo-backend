@@ -1,6 +1,7 @@
 package com.macro.mall.tiny.modules.lms.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
@@ -30,13 +31,12 @@ public interface LmsItemService extends IService<LmsItem> {
     /**
      * 修改货物状态
      */
-    boolean updateItemStatus(LmsItem item, String orderAction);
+    String updateItemStatus(LmsItem item, String orderAction);
 
     /**
      * 分页获取货物列表
      */
-    Page<LmsItem> list(String deliverySn, String userSn, String location, String note, String createTime,
-                       String sku, String size, Integer status, String positionInfo, Integer pageSize, Integer pageNum);
+    Page<LmsItem> list(LmsItemQueryParam lmsItemQueryParam);
 
     /**
      * 分页获取精准货物列表
@@ -65,4 +65,8 @@ public interface LmsItemService extends IService<LmsItem> {
      */
     Boolean modifyItemStatus(List<Long> ids, String newStatus);
 
+    /**
+     * 获取货物对应订单
+     */
+    List<LmsItem> getItemListByOrder(Long orderId);
 }
