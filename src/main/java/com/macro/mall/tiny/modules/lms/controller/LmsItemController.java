@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.api.CommonResult;
 import com.macro.mall.tiny.modules.lms.dto.LmsAllocateParam;
+import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
 import com.macro.mall.tiny.modules.lms.service.LmsItemService;
@@ -104,21 +105,10 @@ public class LmsItemController {
     }
 
     @ApiOperation("根据条件分页获取货物列表")
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<CommonPage<LmsItem>> list(@RequestParam(value = "deliverySn", required = false) String deliverySn,
-                                                  @RequestParam(value = "userSn", required = false) String userSn,
-                                                  @RequestParam(value = "location", required = false) String location,
-                                                  @RequestParam(value = "note", required = false) String note,
-                                                  @RequestParam(value = "createTime", required = false) String createTime,
-                                                  @RequestParam(value = "sku", required = false) String sku,
-                                                  @RequestParam(value = "size", required = false) String size,
-                                                  @RequestParam(value = "itemStatus", required = false) Integer itemStatus,
-                                                  @RequestParam(value = "positionInfo", required = false) String positionInfo,
-                                                  @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-                                                  @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<LmsItem> itemList = lmsItemService.list(deliverySn, userSn, location, note, createTime, sku, size,
-                itemStatus, positionInfo, pageSize, pageNum);
+    public CommonResult<CommonPage<LmsItem>> list(@RequestBody LmsItemQueryParam lmsItemQueryParam) {
+        Page<LmsItem> itemList = lmsItemService.list(lmsItemQueryParam);
         return CommonResult.success(CommonPage.restPage(itemList));
     }
 

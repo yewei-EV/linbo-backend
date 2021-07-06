@@ -1,6 +1,7 @@
 package com.macro.mall.tiny.modules.lms.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
@@ -35,8 +36,7 @@ public interface LmsItemService extends IService<LmsItem> {
     /**
      * 分页获取货物列表
      */
-    Page<LmsItem> list(String deliverySn, String userSn, String location, String note, String createTime,
-                       String sku, String size, Integer status, String positionInfo, Integer pageSize, Integer pageNum);
+    Page<LmsItem> list(LmsItemQueryParam lmsItemQueryParam);
 
     /**
      * 分页获取精准货物列表

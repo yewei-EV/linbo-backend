@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
 import com.macro.mall.tiny.modules.lms.mapper.LmsOrderMapper;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.mapper.LmsItemMapper;
@@ -16,6 +17,7 @@ import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -195,40 +197,43 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     }
 
     @Override
-    public Page<LmsItem> list(String deliverySn, String userSn, String location, String note, String createTime,
-                              String sku, String size, Integer itemStatus, String positionInfo, Integer pageSize,
-                              Integer pageNum) {
-        Page<LmsItem> page = new Page<>(pageNum,pageSize);
+    public Page<LmsItem> list(LmsItemQueryParam lmsItemQueryParam) {
+        Page<LmsItem> page = new Page<>(lmsItemQueryParam.getPageNum(), lmsItemQueryParam.getPageSize());
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("create_time");
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
 
-        if(StrUtil.isNotEmpty(deliverySn)){
-            lambda.like(LmsItem::getDeliverySn, deliverySn);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getDeliverySn())){
+            lambda.like(LmsItem::getDeliverySn, lmsItemQueryParam.getDeliverySn());
         }
-        if(StrUtil.isNotEmpty(userSn)){
-            lambda.eq(LmsItem::getUserSn, userSn);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getUserSn())){
+            lambda.eq(LmsItem::getUserSn, lmsItemQueryParam.getUserSn());
         }
-        if(StrUtil.isNotEmpty(location)){
-            lambda.eq(LmsItem::getLocation, location);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getLocation())){
+            lambda.eq(LmsItem::getLocation, lmsItemQueryParam.getLocation());
         }
-        if(StrUtil.isNotEmpty(note)){
-            lambda.like(LmsItem::getNote, note);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getNote())){
+            lambda.like(LmsItem::getNote, lmsItemQueryParam.getNote());
         }
-        if(StrUtil.isNotEmpty(createTime)){
-            lambda.like(LmsItem::getCreateTime, createTime);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getCreateTime())){
+            lambda.like(LmsItem::getCreateTime, lmsItemQueryParam.getCreateTime());
         }
-        if(StrUtil.isNotEmpty(sku)){
-            lambda.eq(LmsItem::getSku, sku);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getSku())){
+            lambda.eq(LmsItem::getSku, lmsItemQueryParam.getSku());
         }
-        if(StrUtil.isNotEmpty(size)){
-            lambda.eq(LmsItem::getSize, size);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getSize())){
+            lambda.eq(LmsItem::getSize, lmsItemQueryParam.getSize());
         }
-        if(itemStatus!=null){
-            lambda.eq(LmsItem::getItemStatus, itemStatus);
+        if (!CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses())) {
+            lambda.in(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatuses());
+//            for (Integer status : lmsItemQueryParam.getItemStatuses()) {
+//                lambda.eq(LmsItem::getItemStatus, status);
+//            }
+        } else if(lmsItemQueryParam.getItemStatus()!=null){
+            lambda.eq(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatus());
         }
-        if(StrUtil.isNotEmpty(positionInfo)){
-            lambda.like(LmsItem::getPositionInfo, positionInfo);
+        if(StrUtil.isNotEmpty(lmsItemQueryParam.getPositionInfo())){
+            lambda.like(LmsItem::getPositionInfo, lmsItemQueryParam.getPositionInfo());
         }
         return page(page,wrapper);
     }
