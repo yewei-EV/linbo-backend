@@ -58,4 +58,7 @@ public class LmsItem implements Serializable {
     @ApiModelProperty(value = "位置信息")
     private String positionInfo;
 
+    @ApiModelProperty(value = "照片")
+    private String photo;
+
 }
