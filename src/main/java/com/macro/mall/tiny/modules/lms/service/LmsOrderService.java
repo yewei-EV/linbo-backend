@@ -48,4 +48,8 @@ public interface LmsOrderService extends IService<LmsOrder> {
      */
     Long fetchOrderCount(String statusStart, String statusEnd, String userSn);
 
+    /**
+     * 用户修改订单
+     */
+    boolean updateByUser(Long id, String orderAction, String destination, String attachment);
 }

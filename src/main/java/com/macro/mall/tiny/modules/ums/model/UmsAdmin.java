@@ -60,4 +60,13 @@ public class UmsAdmin implements Serializable {
     @ApiModelProperty(value = "识别码（用户用）")
     private String userSn;
 
+    @ApiModelProperty(value = "收件人姓名")
+    private String name;
+
+    @ApiModelProperty(value = "收件人电话")
+    private String phoneNumber;
+
+    @ApiModelProperty(value = "收件地址")
+    private String address;
+
 }

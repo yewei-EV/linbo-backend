@@ -16,17 +16,16 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -117,6 +116,11 @@ public class UmsAdminController {
         data.put("id", umsAdmin.getId());
         data.put("region", umsAdmin.getRegion());
         data.put("userSn", umsAdmin.getUserSn());
+        data.put("name", umsAdmin.getName());
+        data.put("phoneNumber", umsAdmin.getPhoneNumber());
+        data.put("address", umsAdmin.getAddress());
+        data.put("email", umsAdmin.getEmail());
+        data.put("discordId", umsAdmin.getDiscordId());
 
         List<UmsRole> roleList = adminService.getRoleList(umsAdmin.getId());
         if(CollUtil.isNotEmpty(roleList)){
@@ -198,6 +202,40 @@ public class UmsAdminController {
         UmsAdmin umsAdmin = new UmsAdmin();
         umsAdmin.setStatus(status);
         boolean success = adminService.update(id,umsAdmin);
+        if (success) {
+            return CommonResult.success(null);
+        }
+        return CommonResult.failed();
+    }
+
+    @ApiOperation("修改帐号地址信息")
+    @RequestMapping(value = "/updateAddressInfo/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateAddressInfo(@PathVariable Long id, @RequestParam(value = "name") String name,
+                                          @RequestParam(value = "phoneNumber") String phoneNumber,
+                                          @RequestParam(value = "address") String address) {
+        UmsAdmin umsAdmin = new UmsAdmin();
+        umsAdmin.setName(name);
+        umsAdmin.setPhoneNumber(phoneNumber);
+        umsAdmin.setAddress(address);
+        boolean success = adminService.update(id, umsAdmin);
+        if (success) {
+            return CommonResult.success(null);
+        }
+        return CommonResult.failed();
+    }
+
+    @ApiOperation("修改帐号个人资料")
+    @RequestMapping(value = "/updateProfileInfo/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateProfileInfo(@PathVariable Long id, @RequestParam(value = "email") String email,
+                                          @RequestParam(value = "discordId") String discordId,
+                                          @RequestParam(value = "icon") String icon) {
+        UmsAdmin umsAdmin = new UmsAdmin();
+        umsAdmin.setEmail(email);
+        umsAdmin.setDiscordId(discordId);
+        umsAdmin.setIcon(icon);
+        boolean success = adminService.update(id, umsAdmin);
         if (success) {
             return CommonResult.success(null);
         }

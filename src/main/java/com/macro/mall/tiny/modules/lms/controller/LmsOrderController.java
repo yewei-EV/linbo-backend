@@ -63,6 +63,19 @@ public class LmsOrderController {
         return CommonResult.failed();
     }
 
+    @ApiOperation("用户修改订单")
+    @RequestMapping(value = "/updateAction/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult updateByUser(@PathVariable Long id, @RequestParam(value = "orderAction") String orderAction,
+                                     @RequestParam(value = "destination") String destination,
+                                     @RequestParam(value = "attachment") String attachment) {
+        boolean success = lmsOrderService.updateByUser(id, orderAction, destination, attachment);
+        if (success) {
+            return CommonResult.success(null);
+        }
+        return CommonResult.failed();
+    }
+
     @ApiOperation("批量删除订单")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ResponseBody

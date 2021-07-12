@@ -14,6 +14,7 @@ import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Date;
@@ -120,6 +121,22 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
             lambda.eq(LmsOrder::getUserSn, userSn);
         }
         return (long) lmsOrderMapper.selectList(lambda).size();
+    }
+
+    @Override
+    public boolean updateByUser(Long id, String orderAction, String destination, String attachment) {
+        LmsOrder order = this.getById(id);
+        if (!StringUtils.isEmpty(orderAction) && order.getOrderAction().equals("-1")) {
+            order.setOrderAction(orderAction);
+        }
+        if (!StringUtils.isEmpty(destination) && StringUtils.isEmpty(order.getDestination())
+                && (orderAction.equals("0") || orderAction.equals("1") || orderAction.equals("3"))) {
+            order.setDestination(destination);
+        }
+        if (!StringUtils.isEmpty(attachment)) {
+            order.setAttachment(attachment);
+        }
+        return updateById(order);
     }
 
 }
