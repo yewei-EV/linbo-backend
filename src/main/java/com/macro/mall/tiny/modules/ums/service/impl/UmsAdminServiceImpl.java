@@ -133,6 +133,7 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
             existUmsAdminList.get(0).setUsername(umsAdminParam.getUsername());
             existUmsAdminList.get(0).setPassword(encodePassword);
             existUmsAdminList.get(0).setEmail(umsAdminParam.getEmail());
+            existUmsAdminList.get(0).setStatus(1);
             umsAdmin = existUmsAdminList.get(0);
             this.delete(existUmsAdminList.get(0).getId());
         } else {
