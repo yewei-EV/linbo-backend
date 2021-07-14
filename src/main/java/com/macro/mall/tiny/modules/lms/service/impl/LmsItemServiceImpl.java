@@ -15,7 +15,6 @@ import com.macro.mall.tiny.modules.lms.service.LmsItemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;

@@ -3,9 +3,7 @@ package com.macro.mall.tiny.modules.lms.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**

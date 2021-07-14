@@ -9,16 +9,13 @@ import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
 import com.macro.mall.tiny.modules.lms.service.LmsItemService;
-import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -96,18 +93,13 @@ public class LmsItemController {
         return CommonResult.failed();
     }
 
-    @ApiOperation("获取所有货物")
-    @RequestMapping(value = "/listAll", method = RequestMethod.GET)
-    @ResponseBody
-    public CommonResult<List<LmsItem>> listAll() {
-        List<LmsItem> itemList = lmsItemService.list();
-        return CommonResult.success(itemList);
-    }
-
     @ApiOperation("根据条件分页获取货物列表")
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult<CommonPage<LmsItem>> list(@RequestBody LmsItemQueryParam lmsItemQueryParam) {
+        if (lmsItemQueryParam.getPageSize() > 20) {
+            return CommonResult.failed("Invalid page size!");
+        }
         Page<LmsItem> itemList = lmsItemService.list(lmsItemQueryParam);
         return CommonResult.success(CommonPage.restPage(itemList));
     }

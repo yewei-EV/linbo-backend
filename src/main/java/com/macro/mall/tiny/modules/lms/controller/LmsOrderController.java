@@ -1,21 +1,13 @@
 package com.macro.mall.tiny.modules.lms.controller;
 
-
-import cn.hutool.core.collection.CollectionUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.api.CommonResult;
-import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
-import com.macro.mall.tiny.modules.lms.model.LmsOrderItemRelation;
-import com.macro.mall.tiny.modules.lms.service.LmsItemService;
-import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -87,14 +79,6 @@ public class LmsOrderController {
         return CommonResult.failed();
     }
 
-    @ApiOperation("获取所有订单")
-    @RequestMapping(value = "/listAll", method = RequestMethod.GET)
-    @ResponseBody
-    public CommonResult<List<LmsOrder>> listAll() {
-        List<LmsOrder> orderList = lmsOrderService.list();
-        return CommonResult.success(orderList);
-    }
-
     @ApiOperation("根据条件分页获取订单列表")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
@@ -110,6 +94,9 @@ public class LmsOrderController {
                                                   @RequestParam(value = "paymentTime", required = false) String paymentTime,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
+        if (pageSize > 20) {
+            return CommonResult.failed("Invalid page size!");
+        }
         Page<LmsOrder> orderList = lmsOrderService.list(id, orderAction, deliverySn, userSn, destination, note,
                 createTime, orderStatus, paymentStatus, paymentTime, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(orderList));
