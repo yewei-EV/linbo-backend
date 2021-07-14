@@ -12,6 +12,7 @@ import com.macro.mall.tiny.modules.lms.service.LmsOrderItemRelationService;
 import com.macro.mall.tiny.modules.lms.service.LmsOrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -122,9 +123,11 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     }
 
     @Override
-    public boolean updateByUser(Long id, String orderAction, String destination, String attachment) {
+    public boolean updateByUser(Long id, String orderAction, String destination, String attachment,
+                                Integer storageDays, String storageLocation) {
         LmsOrder order = this.getById(id);
-        if (!StringUtils.isEmpty(orderAction) && order.getOrderAction().equals("-1")) {
+        if (!StringUtils.isEmpty(orderAction) && (order.getOrderAction().equals("-1")
+                || order.getOrderAction().equals("4") || order.getOrderAction().equals("7"))) {
             order.setOrderAction(orderAction);
         }
         if (!StringUtils.isEmpty(destination) && StringUtils.isEmpty(order.getDestination())
@@ -133,6 +136,12 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         }
         if (!StringUtils.isEmpty(attachment)) {
             order.setAttachment(attachment);
+        }
+        if (!ObjectUtils.isEmpty(storageDays)) {
+            order.setStorageDays(storageDays);
+        }
+        if (!StringUtils.isEmpty(storageLocation)) {
+            order.setStorageLocation(storageLocation);
         }
         return updateById(order);
     }

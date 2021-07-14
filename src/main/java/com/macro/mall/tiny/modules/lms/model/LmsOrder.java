@@ -78,4 +78,10 @@ public class LmsOrder implements Serializable {
     @ApiModelProperty(value = "附件")
     private String attachment;
 
+    @ApiModelProperty(value = "寄存天数")
+    private Integer storageDays;
+
+    @ApiModelProperty(value = "寄存位置")
+    private String storageLocation;
+
 }

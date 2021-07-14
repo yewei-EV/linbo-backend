@@ -97,9 +97,6 @@ public class LmsItemController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult<CommonPage<LmsItem>> list(@RequestBody LmsItemQueryParam lmsItemQueryParam) {
-        if (lmsItemQueryParam.getPageSize() > 20) {
-            return CommonResult.failed("Invalid page size!");
-        }
         Page<LmsItem> itemList = lmsItemService.list(lmsItemQueryParam);
         return CommonResult.success(CommonPage.restPage(itemList));
     }

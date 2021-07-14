@@ -60,8 +60,10 @@ public class LmsOrderController {
     @ResponseBody
     public CommonResult updateByUser(@PathVariable Long id, @RequestParam(value = "orderAction") String orderAction,
                                      @RequestParam(value = "destination") String destination,
-                                     @RequestParam(value = "attachment") String attachment) {
-        boolean success = lmsOrderService.updateByUser(id, orderAction, destination, attachment);
+                                     @RequestParam(value = "attachment") String attachment,
+                                     @RequestParam(value = "storageDays") Integer storageDays,
+                                     @RequestParam(value = "storageLocation") String storageLocation) {
+        boolean success = lmsOrderService.updateByUser(id, orderAction, destination, attachment, storageDays, storageLocation);
         if (success) {
             return CommonResult.success(null);
         }
@@ -94,9 +96,6 @@ public class LmsOrderController {
                                                   @RequestParam(value = "paymentTime", required = false) String paymentTime,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        if (pageSize > 20) {
-            return CommonResult.failed("Invalid page size!");
-        }
         Page<LmsOrder> orderList = lmsOrderService.list(id, orderAction, deliverySn, userSn, destination, note,
                 createTime, orderStatus, paymentStatus, paymentTime, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(orderList));

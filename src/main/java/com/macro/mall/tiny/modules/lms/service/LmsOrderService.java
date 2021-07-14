@@ -50,5 +50,6 @@ public interface LmsOrderService extends IService<LmsOrder> {
     /**
      * 用户修改订单
      */
-    boolean updateByUser(Long id, String orderAction, String destination, String attachment);
+    boolean updateByUser(Long id, String orderAction, String destination, String attachment, Integer storageDays,
+                         String storageLocation);
 }
