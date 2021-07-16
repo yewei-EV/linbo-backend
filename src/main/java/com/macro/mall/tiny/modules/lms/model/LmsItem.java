@@ -39,7 +39,7 @@ public class LmsItem implements Serializable {
     @ApiModelProperty(value = "货物地点")
     private String location;
 
-    @ApiModelProperty(value = "备注信息")
+    @ApiModelProperty(value = "物流单号")
     private String note;
 
     @ApiModelProperty(value = "创建时间")
@@ -59,5 +59,8 @@ public class LmsItem implements Serializable {
 
     @ApiModelProperty(value = "照片")
     private String photo;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
 }

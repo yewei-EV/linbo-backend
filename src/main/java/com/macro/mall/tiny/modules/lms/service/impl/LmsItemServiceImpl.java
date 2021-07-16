@@ -258,37 +258,37 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         wrapper.orderByDesc("create_time");
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
 
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getDeliverySn())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getDeliverySn())){
             lambda.like(LmsItem::getDeliverySn, lmsItemQueryParam.getDeliverySn());
         }
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getUserSn())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getUserSn())){
             lambda.eq(LmsItem::getUserSn, lmsItemQueryParam.getUserSn());
         }
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getLocation())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getLocation())){
             lambda.eq(LmsItem::getLocation, lmsItemQueryParam.getLocation());
         }
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getNote())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getNote())){
             lambda.like(LmsItem::getNote, lmsItemQueryParam.getNote());
         }
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getCreateTime())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getCreateTime())){
             lambda.like(LmsItem::getCreateTime, lmsItemQueryParam.getCreateTime());
         }
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getSku())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getSku())){
             lambda.eq(LmsItem::getSku, lmsItemQueryParam.getSku());
         }
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getSize())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getSize())){
             lambda.eq(LmsItem::getSize, lmsItemQueryParam.getSize());
         }
         if (!CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses())) {
             lambda.in(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatuses());
-//            for (Integer status : lmsItemQueryParam.getItemStatuses()) {
-//                lambda.eq(LmsItem::getItemStatus, status);
-//            }
-        } else if(lmsItemQueryParam.getItemStatus()!=null){
+        } else if (lmsItemQueryParam.getItemStatus()!=null){
             lambda.eq(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatus());
         }
-        if(StrUtil.isNotEmpty(lmsItemQueryParam.getPositionInfo())){
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getPositionInfo())) {
             lambda.like(LmsItem::getPositionInfo, lmsItemQueryParam.getPositionInfo());
+        }
+        if (StrUtil.isNotEmpty(lmsItemQueryParam.getRemark())){
+            lambda.like(LmsItem::getRemark, lmsItemQueryParam.getRemark());
         }
         return page(page,wrapper);
     }
@@ -339,10 +339,20 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
 
     @Override
     public boolean allocateOrder(Long itemId, Long orderId) {
-        //先删除原来的关系
         QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(LmsOrderItemRelation::getItemId, itemId);
+        //删除原来的订单
+        List<LmsOrderItemRelation> relationList = lmsOrderItemRelationService.list(wrapper);
+        List<Long> orderList = new ArrayList<>();
+        for (LmsOrderItemRelation relation: relationList) {
+            if (!relation.getOrderId().equals(orderId)) {
+                orderList.add(relation.getOrderId());
+            }
+        }
+        lmsOrderService.delete(orderList);
+        //删除原来的关系
         lmsOrderItemRelationService.remove(wrapper);
+
         //建立新关系
         if (orderId!=null) {
             List<LmsOrderItemRelation> list = new ArrayList<>();

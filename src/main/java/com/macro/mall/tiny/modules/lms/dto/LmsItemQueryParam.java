@@ -37,6 +37,8 @@ public class LmsItemQueryParam {
     private List<Integer> itemStatuses;
     @ApiModelProperty(value = "存储位置")
     private String positionInfo;
+    @ApiModelProperty(value = "备注")
+    private String remark;
     @ApiModelProperty(value = "每页尺寸")
     private Integer pageSize;
     @ApiModelProperty(value = "页码")
