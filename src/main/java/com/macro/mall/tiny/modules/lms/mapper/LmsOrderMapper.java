@@ -27,5 +27,8 @@ public interface LmsOrderMapper extends BaseMapper<LmsOrder> {
      */
     Float getOrderPriceCount(@Param("location") String location, @Param("date") String date);
 
-
+    /**
+     * 获取对应订单
+     */
+    List<LmsOrder> getPreciseOrderList(@Param("deliverySn") String deliverySn, @Param("userSn") String userSn);
 }

@@ -6,6 +6,7 @@ import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.api.CommonResult;
 import com.macro.mall.tiny.modules.lms.dto.LmsAllocateParam;
 import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
+import com.macro.mall.tiny.modules.lms.mapper.LmsOrderMapper;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
 import com.macro.mall.tiny.modules.lms.model.LmsOrder;
 import com.macro.mall.tiny.modules.lms.service.LmsItemService;
@@ -33,15 +34,22 @@ public class LmsItemController {
 
     private final LmsItemService lmsItemService;
 
-    public LmsItemController(LmsItemService lmsItemService) {
+    private final LmsOrderMapper lmsOrderMapper;
+
+    public LmsItemController(LmsItemService lmsItemService, LmsOrderMapper lmsOrderMapper) {
         this.lmsItemService = lmsItemService;
+        this.lmsOrderMapper = lmsOrderMapper;
     }
 
     @ApiOperation("添加货物")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult create(@RequestBody LmsItem item) {
+    public CommonResult create(@RequestBody LmsItem item) throws InterruptedException {
         boolean success = lmsItemService.create(item);
+        List<LmsOrder> orders = lmsOrderMapper.getPreciseOrderList(item.getDeliverySn(), item.getUserSn());
+        if (orders.size() > 0) {
+            lmsItemService.allocateOrder(item.getId(), orders.get(0).getId());
+        }
         if (success) {
             return CommonResult.success(item.getId());
         }
