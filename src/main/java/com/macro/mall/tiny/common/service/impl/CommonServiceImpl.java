@@ -32,10 +32,10 @@ public class CommonServiceImpl implements CommonService {
         List<String> src = Arrays.asList(GENERATE_SOURCE);
         Collections.shuffle(src);
         StringBuilder randomSb = new StringBuilder(4);
-        int i2 = (seed) % 36;
-        int i1 = (seed / (36)) % 36;
-        int i0 = (seed / (36 * 36)) % 36;
-        int i = (seed / (36 * 36 * 36)) % 36;
+        int i2 = (seed) % 30;
+        int i1 = (seed / (30)) % 30;
+        int i0 = (seed / (30 * 30)) % 30;
+        int i = (seed / (30 * 30 * 30)) % 30;
         randomSb = randomSb.append(src.get(i0)).append(src.get(i1)).append(src.get(i2)).append(src.get(i));
         return randomSb.toString();
     }
