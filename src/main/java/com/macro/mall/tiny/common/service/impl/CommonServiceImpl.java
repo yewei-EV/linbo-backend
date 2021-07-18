@@ -31,15 +31,12 @@ public class CommonServiceImpl implements CommonService {
     public String generateRandomStringBySeed(int seed) {
         List<String> src = Arrays.asList(GENERATE_SOURCE);
         Collections.shuffle(src);
-        StringBuilder randomSb = new StringBuilder(6);
-        int i4 = (seed) % 36;
-        int i3 = (seed / (36)) % 36;
-        int i2 = (seed / (36 * 36)) % 36;
-        int i1 = (seed / (36 * 36 * 36)) % 36;
-        int i0 = (seed / (36 * 36 * 36 * 36)) % 36;
-        int i = (seed / (36 * 36 * 36 * 36 * 36)) % 36;
-        randomSb = randomSb.append(src.get(i0)).append(src.get(i1)).append(src.get(i2)).append(src.get(i3))
-                .append(src.get(i4)).append(src.get(i));
+        StringBuilder randomSb = new StringBuilder(4);
+        int i2 = (seed) % 36;
+        int i1 = (seed / (36)) % 36;
+        int i0 = (seed / (36 * 36)) % 36;
+        int i = (seed / (36 * 36 * 36)) % 36;
+        randomSb = randomSb.append(src.get(i0)).append(src.get(i1)).append(src.get(i2)).append(src.get(i));
         return randomSb.toString();
     }
 }
