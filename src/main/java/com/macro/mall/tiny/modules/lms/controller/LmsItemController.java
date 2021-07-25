@@ -181,5 +181,17 @@ public class LmsItemController {
         return CommonResult.success(result);
     }
 
+    @ApiOperation("通过订单刷新包裹状态")
+    @RequestMapping(value = "/refreshItemStatusByOrder/{orderId}", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult refreshItemStatusByOrder(@PathVariable Long orderId,
+                                                 @RequestParam(value = "orderAction") String orderAction) {
+        List<LmsItem> items = lmsItemService.getItemListByOrder(orderId);
+        for (LmsItem item : items) {
+            lmsItemService.refreshItemStatus(item, orderAction);
+        }
+        return CommonResult.success(null);
+    }
+
 }
 

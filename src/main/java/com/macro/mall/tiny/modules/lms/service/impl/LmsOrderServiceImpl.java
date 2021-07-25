@@ -103,7 +103,7 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
         if (!CollectionUtils.isEmpty(list)) {
             LmsOrder order = this.getById(list.get(0).getOrderId());
-            return order.getOrderStatus() >= 2;
+            return order.getOrderStatus() == 2 || order.getOrderStatus() == 3;
         }
         return false;
     }
@@ -127,8 +127,13 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                                 Integer storageDays, String storageLocation) {
         LmsOrder order = this.getById(id);
         if (!StringUtils.isEmpty(orderAction) && (order.getOrderAction().equals("-1")
-                || order.getOrderAction().equals("4") || order.getOrderAction().equals("7"))) {
+                || order.getOrderAction().equals("4") || order.getOrderAction().equals("7"))
+                && !orderAction.equals(order.getOrderAction())) {
             order.setOrderAction(orderAction);
+            if (!orderAction.equals("-1") && !orderAction.equals("0") && !orderAction.equals("4")
+                    && !orderAction.equals("7") && !ObjectUtils.isEmpty(order.getWeight())) {
+                order.setOrderStatus(0);
+            }
         }
         if (!StringUtils.isEmpty(destination) && StringUtils.isEmpty(order.getDestination())
                 && (orderAction.equals("0") || orderAction.equals("1") || orderAction.equals("3"))) {
@@ -144,6 +149,17 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
             order.setStorageLocation(storageLocation);
         }
         return updateById(order);
+    }
+
+    @Override
+    public int refreshOrderStatus(LmsOrder order) {
+        if (!order.getOrderAction().equals("-1") && !order.getOrderAction().equals("0")
+                && !order.getOrderAction().equals("4") && !order.getOrderAction().equals("7")
+                && !ObjectUtils.isEmpty(order.getWeight()) && order.getOrderStatus().equals(4)) {
+            return 0;
+        } else {
+            return order.getOrderStatus();
+        }
     }
 
 }

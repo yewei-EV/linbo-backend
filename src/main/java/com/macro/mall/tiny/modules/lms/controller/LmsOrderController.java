@@ -47,6 +47,7 @@ public class LmsOrderController {
     @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult update(@PathVariable Long id, @RequestBody LmsOrder order) {
+        order.setOrderStatus(lmsOrderService.refreshOrderStatus(order));
         order.setId(id);
         boolean success = lmsOrderService.updateById(order);
         if (success) {

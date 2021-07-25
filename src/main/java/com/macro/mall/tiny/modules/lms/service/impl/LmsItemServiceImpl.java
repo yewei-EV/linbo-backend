@@ -74,13 +74,11 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
 
     @Override
     public String updateItemStatus(LmsItem item, String orderAction) {
-        if (!StringUtils.isEmpty(orderAction) && (item.getItemStatus() == 1 || item.getItemStatus() == 0)) {
+        if (!StringUtils.isEmpty(orderAction) && (item.getItemStatus() == 0 || item.getItemStatus() == 1)) {
             item.setItemStatus(2);
         } else if (item.getItemStatus() == 2) {
             switch (orderAction) {
                 case "0":
-                case "6":
-                case "7":
                     item.setItemStatus(4);
                     break;
                 case "1":
@@ -100,7 +98,6 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 case "3":
                     if (lmsOrderService.checkIfPaid(item.getId())) {
                         item.setItemStatus(7);
-                        break;
                     } else {
                         item.setItemStatus(3);
                     }
@@ -111,7 +108,13 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 case "5":
                     if (lmsOrderService.checkIfPaid(item.getId())) {
                         item.setItemStatus(9);
-                        break;
+                    } else {
+                        item.setItemStatus(3);
+                    }
+                    break;
+                case "8":
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(20);
                     } else {
                         item.setItemStatus(3);
                     }
@@ -138,7 +141,6 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                     case "3":
                         if (lmsOrderService.checkIfPaid(item.getId())) {
                             item.setItemStatus(7);
-                            break;
                         } else {
                             item.setItemStatus(3);
                         }
@@ -146,7 +148,13 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                     case "5":
                         if (lmsOrderService.checkIfPaid(item.getId())) {
                             item.setItemStatus(9);
-                            break;
+                        } else {
+                            item.setItemStatus(3);
+                        }
+                        break;
+                    case "8":
+                        if (lmsOrderService.checkIfPaid(item.getId())) {
+                            item.setItemStatus(20);
                         } else {
                             item.setItemStatus(3);
                         }
@@ -155,21 +163,16 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                         item.setItemStatus(3);
                 }
         } else if (item.getItemStatus() == 4 || item.getItemStatus() == 5 || item.getItemStatus() == 6
-                || item.getItemStatus() == 7 || item.getItemStatus() == 9) {
+                || item.getItemStatus() == 7 || item.getItemStatus() == 9 || item.getItemStatus() == 20) {
             item.setItemStatus(10);
         } else if (item.getItemStatus() == 8) {
             item.setItemStatus(11);
         } else if (item.getItemStatus() == 10) {
-            if (orderAction.equals("7")) {
-                item.setItemStatus(15);
-            } else {
-                item.setItemStatus(12);
-            }
+            item.setItemStatus(12);
         } else if (item.getItemStatus() == 11) {
             // 已海外寄存
             switch (orderAction) {
                 case "0":
-                case "6":
                     item.setItemStatus(4);
                     break;
                 case "1":
@@ -182,7 +185,6 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 case "3":
                     if (lmsOrderService.checkIfPaid(item.getId())) {
                         item.setItemStatus(7);
-                        break;
                     } else {
                         item.setItemStatus(3);
                     }
@@ -190,7 +192,13 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 case "5":
                     if (lmsOrderService.checkIfPaid(item.getId())) {
                         item.setItemStatus(9);
-                        break;
+                    } else {
+                        item.setItemStatus(3);
+                    }
+                    break;
+                case "8":
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(20);
                     } else {
                         item.setItemStatus(3);
                     }
@@ -200,52 +208,48 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             }
         } else if (item.getItemStatus() == 12) {
             switch (orderAction) {
-                case "0":
-                    if (lmsOrderService.checkIfPaid(item.getId())) {
-                        item.setItemStatus(14);
-                        break;
-                    } else {
-                        return "未付款";
-                    }
                 case "6":
                     if (lmsOrderService.checkIfPaid(item.getId())) {
                         item.setItemStatus(13);
-                        break;
                     } else {
-                        return "未付款";
+                        item.setItemStatus(12);
                     }
+                    break;
                 case "7":
                     item.setItemStatus(15);
+                    break;
+                case "9":
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(14);
+                    } else {
+                        item.setItemStatus(12);
+                    }
                     break;
                 default:
                     item.setItemStatus(12);
             }
         } else if (item.getItemStatus() == 13 || item.getItemStatus() == 14) {
-            if (lmsOrderService.checkIfPaid(item.getId())) {
-                item.setItemStatus(16);
-            } else {
-                return "未付款";
-            }
+            item.setItemStatus(16);
         } else if (item.getItemStatus() == 15) {
             item.setItemStatus(17);
         }
         else if (item.getItemStatus() == 17) {
             // 已国内寄存
             switch (orderAction) {
-                case "1":
-                    if (lmsOrderService.checkIfPaid(item.getId())) {
-                        item.setItemStatus(5);
-                    } else {
-                        item.setItemStatus(3);
-                    }
-                    break;
                 case "6":
                     if (lmsOrderService.checkIfPaid(item.getId())) {
                         item.setItemStatus(13);
-                        break;
                     } else {
-                        return "未付款";
+                        item.setItemStatus(12);
                     }
+                    break;
+                case "9":
+                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                        item.setItemStatus(14);
+                    } else {
+                        item.setItemStatus(12);
+                    }
+                    break;
             }
         }
         return this.updateById(item)?"成功":"失败";
@@ -407,6 +411,71 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             itemList.add(this.getById(relation.getItemId()));
         }
         return itemList;
+    }
+
+    @Override
+    public void refreshItemStatus(LmsItem item, String orderAction) {
+        switch (orderAction) {
+            case "0":
+                item.setItemStatus(4);
+                break;
+            case "1":
+                if (lmsOrderService.checkIfPaid(item.getId())) {
+                    item.setItemStatus(5);
+                } else {
+                    item.setItemStatus(2);
+                }
+                break;
+            case "2":
+                if (lmsOrderService.checkIfPaid(item.getId())) {
+                    item.setItemStatus(6);
+                } else {
+                    item.setItemStatus(2);
+                }
+                break;
+            case "3":
+                if (lmsOrderService.checkIfPaid(item.getId())) {
+                    item.setItemStatus(7);
+                } else {
+                    item.setItemStatus(2);
+                }
+                break;
+            case "4":
+                item.setItemStatus(8);
+                break;
+            case "5":
+                if (lmsOrderService.checkIfPaid(item.getId())) {
+                    item.setItemStatus(9);
+                } else {
+                    item.setItemStatus(2);
+                }
+                break;
+            case "6":
+                if (lmsOrderService.checkIfPaid(item.getId())) {
+                    item.setItemStatus(13);
+                } else {
+                    item.setItemStatus(12);
+                }
+                break;
+            case "7":
+                item.setItemStatus(15);
+                break;
+            case "8":
+                if (lmsOrderService.checkIfPaid(item.getId())) {
+                    item.setItemStatus(20);
+                } else {
+                    item.setItemStatus(2);
+                }
+                break;
+            case "9":
+                if (lmsOrderService.checkIfPaid(item.getId())) {
+                    item.setItemStatus(14);
+                } else {
+                    item.setItemStatus(12);
+                }
+                break;
+        }
+        this.updateById(item);
     }
 
 }

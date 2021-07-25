@@ -69,4 +69,9 @@ public interface LmsItemService extends IService<LmsItem> {
      * 获取货物对应订单
      */
     List<LmsItem> getItemListByOrder(Long orderId);
+
+    /**
+     * 刷新货物状态
+     */
+    void refreshItemStatus(LmsItem item, String orderAction);
 }

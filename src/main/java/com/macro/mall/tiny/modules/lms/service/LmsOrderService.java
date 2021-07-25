@@ -52,4 +52,10 @@ public interface LmsOrderService extends IService<LmsOrder> {
      */
     boolean updateByUser(Long id, String orderAction, String destination, String attachment, Integer storageDays,
                          String storageLocation);
+
+    /**
+     * 刷新订单状态
+     * @return
+     */
+    int refreshOrderStatus(LmsOrder order);
 }
