@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
 import com.macro.mall.tiny.modules.ums.dto.UpdateAdminPasswordParam;
+import com.macro.mall.tiny.modules.ums.model.UmsAddress;
 import com.macro.mall.tiny.modules.ums.model.UmsAdmin;
 import com.macro.mall.tiny.modules.ums.model.UmsResource;
 import com.macro.mall.tiny.modules.ums.model.UmsRole;
@@ -80,9 +81,20 @@ public interface UmsAdminService extends IService<UmsAdmin> {
     int updateRole(Long adminId, List<Long> roleIds);
 
     /**
+     * 修改用户地址关系
+     */
+    @Transactional
+    boolean allocateAddress(Long adminId, Long addressId);
+
+    /**
      * 获取用户对于角色
      */
     List<UmsRole> getRoleList(Long adminId);
+
+    /**
+     * 获取用户地址对于角色
+     */
+    List<UmsAddress> getAddressList(Long adminId);
 
     /**
      * 获取指定用户的可访问资源

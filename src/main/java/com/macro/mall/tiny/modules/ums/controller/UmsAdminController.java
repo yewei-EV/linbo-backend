@@ -6,6 +6,7 @@ import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.api.CommonResult;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminLoginParam;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
+import com.macro.mall.tiny.modules.ums.dto.UmsAllocateParam;
 import com.macro.mall.tiny.modules.ums.dto.UpdateAdminPasswordParam;
 import com.macro.mall.tiny.modules.ums.model.UmsAdmin;
 import com.macro.mall.tiny.modules.ums.model.UmsRole;
@@ -116,11 +117,9 @@ public class UmsAdminController {
         data.put("id", umsAdmin.getId());
         data.put("region", umsAdmin.getRegion());
         data.put("userSn", umsAdmin.getUserSn());
-        data.put("name", umsAdmin.getName());
-        data.put("phoneNumber", umsAdmin.getPhoneNumber());
-        data.put("address", umsAdmin.getAddress());
         data.put("email", umsAdmin.getEmail());
         data.put("discordId", umsAdmin.getDiscordId());
+        data.put("addressList", adminService.getAddressList(umsAdmin.getId()));
 
         List<UmsRole> roleList = adminService.getRoleList(umsAdmin.getId());
         if(CollUtil.isNotEmpty(roleList)){
@@ -208,23 +207,6 @@ public class UmsAdminController {
         return CommonResult.failed();
     }
 
-    @ApiOperation("修改帐号地址信息")
-    @RequestMapping(value = "/updateAddressInfo/{id}", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult updateAddressInfo(@PathVariable Long id, @RequestParam(value = "name") String name,
-                                          @RequestParam(value = "phoneNumber") String phoneNumber,
-                                          @RequestParam(value = "address") String address) {
-        UmsAdmin umsAdmin = new UmsAdmin();
-        umsAdmin.setName(name);
-        umsAdmin.setPhoneNumber(phoneNumber);
-        umsAdmin.setAddress(address);
-        boolean success = adminService.update(id, umsAdmin);
-        if (success) {
-            return CommonResult.success(null);
-        }
-        return CommonResult.failed();
-    }
-
     @ApiOperation("修改帐号个人资料")
     @RequestMapping(value = "/updateProfileInfo/{id}", method = RequestMethod.POST)
     @ResponseBody
@@ -254,6 +236,17 @@ public class UmsAdminController {
         return CommonResult.failed();
     }
 
+    @ApiOperation("给用户分配地址")
+    @RequestMapping(value = "/allocateAddress/update", method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult allocateAddress(@RequestBody UmsAllocateParam umsAllocateParam) {
+        boolean result = adminService.allocateAddress(umsAllocateParam.getAdminId(), umsAllocateParam.getAddressId());
+        if (result) {
+            return CommonResult.success(true);
+        }
+        return CommonResult.failed();
+    }
+
     @ApiOperation("获取指定用户的角色")
     @RequestMapping(value = "/role/{adminId}", method = RequestMethod.GET)
     @ResponseBody
@@ -261,7 +254,6 @@ public class UmsAdminController {
         List<UmsRole> roleList = adminService.getRoleList(adminId);
         return CommonResult.success(roleList);
     }
-
 
     @ApiOperation("通过discord Id获取指定用户")
     @RequestMapping(value = "/discord/{discordId}", method = RequestMethod.GET)

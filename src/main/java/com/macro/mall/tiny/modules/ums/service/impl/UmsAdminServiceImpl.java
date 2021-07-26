@@ -12,11 +12,9 @@ import com.macro.mall.tiny.common.service.CommonService;
 import com.macro.mall.tiny.domain.AdminUserDetails;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
 import com.macro.mall.tiny.modules.ums.dto.UpdateAdminPasswordParam;
-import com.macro.mall.tiny.modules.ums.mapper.UmsAdminLoginLogMapper;
-import com.macro.mall.tiny.modules.ums.mapper.UmsAdminMapper;
-import com.macro.mall.tiny.modules.ums.mapper.UmsResourceMapper;
-import com.macro.mall.tiny.modules.ums.mapper.UmsRoleMapper;
+import com.macro.mall.tiny.modules.ums.mapper.*;
 import com.macro.mall.tiny.modules.ums.model.*;
+import com.macro.mall.tiny.modules.ums.service.UmsAdminAddressRelationService;
 import com.macro.mall.tiny.modules.ums.service.UmsAdminCacheService;
 import com.macro.mall.tiny.modules.ums.service.UmsAdminRoleRelationService;
 import com.macro.mall.tiny.modules.ums.service.UmsAdminService;
@@ -61,7 +59,11 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     @Autowired
     private UmsAdminRoleRelationService adminRoleRelationService;
     @Autowired
+    private UmsAdminAddressRelationService adminAddressRelationService;
+    @Autowired
     private UmsRoleMapper roleMapper;
+    @Autowired
+    private UmsAddressMapper addressMapper;
     @Autowired
     private UmsResourceMapper resourceMapper;
     @Autowired
@@ -280,8 +282,29 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     }
 
     @Override
+    public boolean allocateAddress(Long adminId, Long addressId) {
+        QueryWrapper<UmsAdminAddressRelation> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(UmsAdminAddressRelation::getAdminId, adminId);
+        if (addressId!=null) {
+            List<UmsAdminAddressRelation> list = new ArrayList<>();
+            UmsAdminAddressRelation relation = new UmsAdminAddressRelation();
+            relation.setAdminId(adminId);
+            relation.setAddressId(addressId);
+            list.add(relation);
+            adminAddressRelationService.saveBatch(list);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public List<UmsRole> getRoleList(Long adminId) {
         return roleMapper.getRoleList(adminId);
+    }
+
+    @Override
+    public List<UmsAddress> getAddressList(Long adminId) {
+        return addressMapper.getAddressList(adminId);
     }
 
     @Override

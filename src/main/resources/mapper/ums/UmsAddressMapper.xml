@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.macro.mall.tiny.modules.ums.mapper.UmsAddressMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.macro.mall.tiny.modules.ums.model.UmsAddress">
+        <id column="id" property="id" />
+        <result column="receiver_name" property="receiverName" />
+        <result column="phone_number" property="phoneNumber" />
+        <result column="address" property="address" />
+    </resultMap>
+
+    <select id="getAddressList" resultType="com.macro.mall.tiny.modules.ums.model.UmsAddress">
+        select a.*
+        from ums_admin_address_relation aa left join ums_address a on aa.address_id = a.id
+        where aa.admin_id = #{adminId}
+    </select>
+
+</mapper>
