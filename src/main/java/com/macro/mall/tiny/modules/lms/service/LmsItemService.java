@@ -39,10 +39,9 @@ public interface LmsItemService extends IService<LmsItem> {
     Page<LmsItem> list(LmsItemQueryParam lmsItemQueryParam);
 
     /**
-     * 分页获取精准货物列表
+     * 查询货物是否存在
      */
-    Page<LmsItem> listPrecise(String deliverySn, String userSn, String location, String note, String createTime,
-                       String sku, String size, Integer status, String positionInfo, Integer pageSize, Integer pageNum);
+    Boolean checkIfExist(String deliverySn, String userSn, String location);
 
     /**
      * 获取货物对应订单

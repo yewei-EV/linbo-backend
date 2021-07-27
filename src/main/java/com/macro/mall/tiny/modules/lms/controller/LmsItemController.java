@@ -109,23 +109,14 @@ public class LmsItemController {
         return CommonResult.success(CommonPage.restPage(itemList));
     }
 
-    @ApiOperation("根据条件分页获取精准货物列表")
-    @RequestMapping(value = "/listPrecise", method = RequestMethod.GET)
+    @ApiOperation("查询货物是否存在")
+    @RequestMapping(value = "/checkIfExist", method = RequestMethod.GET)
     @ResponseBody
-    public CommonResult<CommonPage<LmsItem>> listPrecise(@RequestParam(value = "deliverySn", required = false) String deliverySn,
+    public CommonResult<Boolean> listPrecise(@RequestParam(value = "deliverySn", required = false) String deliverySn,
                                                   @RequestParam(value = "userSn", required = false) String userSn,
-                                                  @RequestParam(value = "location", required = false) String location,
-                                                  @RequestParam(value = "note", required = false) String note,
-                                                  @RequestParam(value = "createTime", required = false) String createTime,
-                                                  @RequestParam(value = "sku", required = false) String sku,
-                                                  @RequestParam(value = "size", required = false) String size,
-                                                  @RequestParam(value = "itemStatus", required = false) Integer itemStatus,
-                                                  @RequestParam(value = "positionInfo", required = false) String positionInfo,
-                                                  @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
-                                                  @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<LmsItem> itemList = lmsItemService.listPrecise(deliverySn, userSn, location, note, createTime, sku, size,
-                itemStatus, positionInfo, pageSize, pageNum);
-        return CommonResult.success(CommonPage.restPage(itemList));
+                                                  @RequestParam(value = "location", required = false) String location) {
+        Boolean isExist = lmsItemService.checkIfExist(deliverySn, userSn, location);
+        return CommonResult.success(isExist);
     }
 
     @ApiOperation("获取指定货物的所有订单")

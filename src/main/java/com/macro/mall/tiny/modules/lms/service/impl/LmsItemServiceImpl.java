@@ -298,42 +298,19 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     }
 
     @Override
-    public Page<LmsItem> listPrecise(String deliverySn, String userSn, String location, String note, String createTime,
-                              String sku, String size, Integer itemStatus, String positionInfo, Integer pageSize,
-                              Integer pageNum) {
-        Page<LmsItem> page = new Page<>(pageNum,pageSize);
+    public Boolean checkIfExist(String deliverySn, String userSn, String location) {
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
-        wrapper.orderByDesc("create_time");
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
-
-        if(StrUtil.isNotEmpty(deliverySn)){
+        if (StrUtil.isNotEmpty(deliverySn)) {
             lambda.eq(LmsItem::getDeliverySn, deliverySn);
         }
-        if(StrUtil.isNotEmpty(userSn)){
-            lambda.eq(LmsItem::getUserSn, userSn);
+        if (StrUtil.isNotEmpty(userSn)) {
+            lambda.like(LmsItem::getUserSn, userSn);
         }
-        if(StrUtil.isNotEmpty(location)){
-            lambda.eq(LmsItem::getLocation, location);
+        if (StrUtil.isNotEmpty(location)) {
+            lambda.like(LmsItem::getLocation, location);
         }
-        if(StrUtil.isNotEmpty(note)){
-            lambda.eq(LmsItem::getNote, note);
-        }
-        if(StrUtil.isNotEmpty(createTime)){
-            lambda.eq(LmsItem::getCreateTime, createTime);
-        }
-        if(StrUtil.isNotEmpty(sku)){
-            lambda.eq(LmsItem::getSku, sku);
-        }
-        if(StrUtil.isNotEmpty(size)){
-            lambda.eq(LmsItem::getSize, size);
-        }
-        if(itemStatus!=null){
-            lambda.eq(LmsItem::getItemStatus, itemStatus);
-        }
-        if(StrUtil.isNotEmpty(positionInfo)){
-            lambda.eq(LmsItem::getPositionInfo, positionInfo);
-        }
-        return page(page,wrapper);
+        return lmsItemMapper.selectList(lambda).size() > 0;
     }
 
     @Override
