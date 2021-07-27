@@ -45,7 +45,7 @@ public interface LmsOrderService extends IService<LmsOrder> {
     /**
      * 获取订单数量
      */
-    Long fetchOrderCount(String statusStart, String statusEnd, String userSn);
+    Long fetchOrderCount(String date, List<Integer> statuses);
 
     /**
      * 用户修改订单

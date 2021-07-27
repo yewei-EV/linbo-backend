@@ -57,7 +57,7 @@ public interface LmsItemService extends IService<LmsItem> {
     /**
      * 获取货物统计
      */
-    Long fetchItemCount(String location, String date, String statusStart, String statusEnd, String userSn);
+    Long fetchItemCount(String location, String date, List<Integer> statuses, String userSn);
 
     /**
      * 修改货物状态

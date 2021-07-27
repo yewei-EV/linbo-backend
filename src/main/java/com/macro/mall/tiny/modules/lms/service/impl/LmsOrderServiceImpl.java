@@ -109,15 +109,14 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     }
 
     @Override
-    public Long fetchOrderCount(String statusStart, String statusEnd, String userSn) {
+    public Long fetchOrderCount(String date, List<Integer> statuses) {
         QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<LmsOrder> lambda = wrapper.lambda();
-        if (StrUtil.isNotEmpty(statusStart) && StrUtil.isNotEmpty(statusEnd)) {
-            lambda.ge(LmsOrder::getOrderStatus, statusStart);
-            lambda.le(LmsOrder::getOrderStatus, statusEnd);
+        if (!CollectionUtils.isEmpty(statuses)) {
+            lambda.in(LmsOrder::getOrderStatus, statuses);
         }
-        if (StrUtil.isNotEmpty(userSn)) {
-            lambda.eq(LmsOrder::getUserSn, userSn);
+        if (StrUtil.isNotEmpty(date)) {
+            lambda.like(LmsOrder::getCreateTime, date);
         }
         return (long) lmsOrderMapper.selectList(lambda).size();
     }

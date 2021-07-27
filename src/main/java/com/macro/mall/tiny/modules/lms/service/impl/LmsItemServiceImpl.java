@@ -348,7 +348,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     }
 
     @Override
-    public Long fetchItemCount(String location, String date, String statusStart, String statusEnd, String userSn) {
+    public Long fetchItemCount(String location, String date, List<Integer> statuses, String userSn) {
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
         if (StrUtil.isNotEmpty(location)) {
@@ -357,9 +357,8 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         if (StrUtil.isNotEmpty(date)) {
             lambda.like(LmsItem::getCreateTime, date);
         }
-        if (StrUtil.isNotEmpty(statusStart) && StrUtil.isNotEmpty(statusEnd)) {
-            lambda.ge(LmsItem::getItemStatus, statusStart);
-            lambda.le(LmsItem::getItemStatus, statusEnd);
+        if (!CollectionUtils.isEmpty(statuses)) {
+            lambda.in(LmsItem::getItemStatus, statuses);
         }
         if (StrUtil.isNotEmpty(userSn)) {
             lambda.eq(LmsItem::getUserSn, userSn);

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.api.CommonResult;
 import com.macro.mall.tiny.modules.lms.dto.LmsAllocateParam;
+import com.macro.mall.tiny.modules.lms.dto.LmsItemCountParam;
 import com.macro.mall.tiny.modules.lms.dto.LmsItemQueryParam;
 import com.macro.mall.tiny.modules.lms.mapper.LmsOrderMapper;
 import com.macro.mall.tiny.modules.lms.model.LmsItem;
@@ -139,27 +140,15 @@ public class LmsItemController {
     }
 
     @ApiOperation("获取货物统计数据")
-    @RequestMapping(value = "/itemCount", method = RequestMethod.GET)
+    @RequestMapping(value = "/itemCount", method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult<Long> itemCount(@RequestParam(value = "dayOffset", required = false) Integer dayOffset,
-                                        @RequestParam(value = "location", required = false) String location,
-                                        @RequestParam(value = "statusRange", required = false) String statusRange,
-                                        @RequestParam(value = "userSn", required = false) String userSn) {
+    public CommonResult<Long> itemCount(@RequestBody LmsItemCountParam lmsCountParam) {
         String dateString = "";
-        if (!ObjectUtils.isEmpty(dayOffset)) {
-            dateString = LocalDate.now().minusDays(dayOffset).toString();
+        if (!ObjectUtils.isEmpty(lmsCountParam.getDayOffset())) {
+            dateString = LocalDate.now().minusDays(lmsCountParam.getDayOffset()).toString();
         }
-        String statusStart = "";
-        String statusEnd = "";
-        String[] strings = statusRange.split(",");
-        if (strings.length > 1) {
-            statusStart = strings[0];
-            statusEnd = strings[1];
-        } else {
-            statusStart = strings[0];
-            statusEnd = strings[0];
-        }
-        Long result = lmsItemService.fetchItemCount(location, dateString, statusStart, statusEnd, userSn);
+        Long result = lmsItemService.fetchItemCount(lmsCountParam.getLocation(), dateString, lmsCountParam.getStatuses(),
+                lmsCountParam.getUserSn());
         return CommonResult.success(result);
     }
 
