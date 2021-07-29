@@ -93,13 +93,14 @@ public class LmsOrderController {
                                                   @RequestParam(value = "userSn", required = false) String userSn,
                                                   @RequestParam(value = "destination", required = false) String destination,
                                                   @RequestParam(value = "note", required = false) String note,
+                                                  @RequestParam(value = "location", required = false) String location,
                                                   @RequestParam(value = "createTime", required = false) String createTime,
                                                   @RequestParam(value = "orderStatus", required = false) Integer orderStatus,
                                                   @RequestParam(value = "paymentStatus", required = false) Integer paymentStatus,
                                                   @RequestParam(value = "paymentTime", required = false) String paymentTime,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<LmsOrder> orderList = lmsOrderService.list(id, orderAction, deliverySn, userSn, destination, note,
+        Page<LmsOrder> orderList = lmsOrderService.list(id, orderAction, deliverySn, userSn, destination, note, location,
                 createTime, orderStatus, paymentStatus, paymentTime, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(orderList));
     }

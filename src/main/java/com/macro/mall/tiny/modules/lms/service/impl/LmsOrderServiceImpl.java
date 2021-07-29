@@ -51,8 +51,8 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
 
     @Override
     public Page<LmsOrder> list(Long id, String orderAction, String deliverySn, String userSn, String destination,
-                               String note, String createTime, Integer orderStatus, Integer paymentStatus, String paymentTime,
-                               Integer pageSize, Integer pageNum) {
+                               String note, String location, String createTime, Integer orderStatus, Integer paymentStatus,
+                               String paymentTime, Integer pageSize, Integer pageNum) {
         Page<LmsOrder> page = new Page<>(pageNum,pageSize);
         QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("create_time");
@@ -74,6 +74,9 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         }
         if(StrUtil.isNotEmpty(note)){
             lambda.like(LmsOrder::getNote, note);
+        }
+        if(StrUtil.isNotEmpty(location)){
+            lambda.eq(LmsOrder::getLocation, location);
         }
         if(StrUtil.isNotEmpty(createTime)){
             lambda.like(LmsOrder::getCreateTime, createTime);
