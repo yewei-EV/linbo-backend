@@ -220,13 +220,18 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     }
 
     @Override
-    public Page<UmsAdmin> list(String keyword, Integer pageSize, Integer pageNum) {
+    public Page<UmsAdmin> list(String keyword, String userSn, String discordId, Integer pageSize, Integer pageNum) {
         Page<UmsAdmin> page = new Page<>(pageNum,pageSize);
         QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<UmsAdmin> lambda = wrapper.lambda();
         if(StrUtil.isNotEmpty(keyword)){
             lambda.like(UmsAdmin::getUsername,keyword);
-            lambda.or().like(UmsAdmin::getDiscordId,keyword);
+        }
+        if(StrUtil.isNotEmpty(userSn)){
+            lambda.like(UmsAdmin::getUserSn,userSn);
+        }
+        if(StrUtil.isNotEmpty(discordId)){
+            lambda.like(UmsAdmin::getDiscordId,discordId);
         }
         return page(page,wrapper);
     }

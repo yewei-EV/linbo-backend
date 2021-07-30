@@ -140,9 +140,11 @@ public class UmsAdminController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
     public CommonResult<CommonPage<UmsAdmin>> list(@RequestParam(value = "keyword", required = false) String keyword,
+                                                   @RequestParam(value = "userSn", required = false) String userSn,
+                                                   @RequestParam(value = "discordId", required = false) String discordId,
                                                    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<UmsAdmin> adminList = adminService.list(keyword, pageSize, pageNum);
+        Page<UmsAdmin> adminList = adminService.list(keyword, userSn, discordId, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(adminList));
     }
 
