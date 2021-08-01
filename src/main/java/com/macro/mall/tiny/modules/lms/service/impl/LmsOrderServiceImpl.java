@@ -40,7 +40,6 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
 
     @Override
     public boolean create(LmsOrder order) {
-        order.setCreateTime(new Date());
         return save(order);
     }
 

@@ -260,6 +260,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         Page<LmsItem> page = new Page<>(lmsItemQueryParam.getPageNum(), lmsItemQueryParam.getPageSize());
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("create_time");
+        wrapper.isNotNull("delivery_sn");
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
 
         if (StrUtil.isNotEmpty(lmsItemQueryParam.getDeliverySn())){
