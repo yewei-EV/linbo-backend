@@ -30,6 +30,9 @@ public class LmsItem implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "归档")
+    boolean archived = false;
+
     @ApiModelProperty(value = "运单号")
     private String deliverySn;
 

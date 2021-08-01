@@ -20,6 +20,7 @@
         <result column="payment_time" property="paymentTime" />
         <result column="price" property="price" />
         <result column="new_delivery_sn" property="newDeliverySn" />
+        <result column="archived" property="archived" />
     </resultMap>
 
     <select id="getOrderList" resultType="com.macro.mall.tiny.modules.lms.model.LmsOrder">
@@ -31,13 +32,13 @@
     <select id="getOrderPriceCount" resultType="java.lang.Float">
         select sum(price)
         from lms_order
-        where location = #{location} and payment_time > #{date}
+        where location = #{location} and payment_time > #{date} and archived = false
     </select>
 
     <select id="getPreciseOrderList" resultType="com.macro.mall.tiny.modules.lms.model.LmsOrder">
         select *
         from lms_order
-        where delivery_sn = #{deliverySn} and user_sn = #{userSn}
+        where delivery_sn = #{deliverySn} and user_sn = #{userSn} and archived = false
     </select>
 
 </mapper>

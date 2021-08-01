@@ -15,7 +15,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,6 +55,7 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
         wrapper.orderByDesc("create_time");
         LambdaQueryWrapper<LmsOrder> lambda = wrapper.lambda();
+        lambda.eq(LmsOrder::isArchived, false);
         if(id!=null){
             lambda.eq(LmsOrder::getId, id);
         }
@@ -114,6 +114,7 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     public Long fetchOrderCount(String date, List<Integer> statuses) {
         QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<LmsOrder> lambda = wrapper.lambda();
+        lambda.eq(LmsOrder::isArchived, false);
         if (!CollectionUtils.isEmpty(statuses)) {
             lambda.in(LmsOrder::getOrderStatus, statuses);
         }

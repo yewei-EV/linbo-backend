@@ -30,6 +30,9 @@ public class LmsOrder implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "归档")
+    boolean archived = false;
+
     @ApiModelProperty(value = "订单操作")
     private String orderAction;
 

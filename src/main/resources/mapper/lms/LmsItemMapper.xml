@@ -14,6 +14,7 @@
         <result column="sku" property="sku" />
         <result column="size" property="size" />
         <result column="item_status" property="itemStatus" />
+        <result column="archived" property="archived" />
     </resultMap>
 
     <select id="getItemCount" resultType="java.lang.Long">

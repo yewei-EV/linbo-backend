@@ -262,7 +262,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         wrapper.orderByDesc("create_time");
         wrapper.isNotNull("delivery_sn");
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
-
+        lambda.eq(LmsItem::isArchived, false);
         if (StrUtil.isNotEmpty(lmsItemQueryParam.getDeliverySn())){
             lambda.like(LmsItem::getDeliverySn, lmsItemQueryParam.getDeliverySn());
         }
@@ -302,6 +302,8 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     public Boolean checkIfExist(String deliverySn, String userSn, String location) {
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
+        lambda.eq(LmsItem::isArchived, false);
+
         if (StrUtil.isNotEmpty(deliverySn)) {
             lambda.eq(LmsItem::getDeliverySn, deliverySn);
         }
@@ -352,6 +354,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     public Long fetchItemCount(String location, String date, List<Integer> statuses, String userSn) {
         QueryWrapper<LmsItem> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<LmsItem> lambda = wrapper.lambda();
+        lambda.eq(LmsItem::isArchived, false);
         if (StrUtil.isNotEmpty(location)) {
             lambda.eq(LmsItem::getLocation, location);
         }
