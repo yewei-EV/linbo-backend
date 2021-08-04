@@ -87,4 +87,13 @@ public class LmsOrder implements Serializable {
     @ApiModelProperty(value = "寄存位置")
     private String storageLocation;
 
+    @ApiModelProperty(value = "超时时间")
+    private Date overtimeDate;
+
+    @ApiModelProperty(value = "Label单号")
+    private String labelNumber;
+
+    @ApiModelProperty(value = "用户备注")
+    private String userRemark;
+
 }

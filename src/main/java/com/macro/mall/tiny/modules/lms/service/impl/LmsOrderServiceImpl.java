@@ -15,6 +15,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -126,7 +129,8 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
 
     @Override
     public boolean updateByUser(Long id, String orderAction, String destination, String attachment,
-                                Integer storageDays, String storageLocation) {
+                                Integer storageDays, String storageLocation, String overtimeDate, String labelNumber,
+                                String userRemark) {
         LmsOrder order = this.getById(id);
         if (!StringUtils.isEmpty(orderAction) && (order.getOrderAction().equals("-1")
                 || order.getOrderAction().equals("4") || order.getOrderAction().equals("7"))
@@ -150,6 +154,21 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         if (!StringUtils.isEmpty(storageLocation)) {
             order.setStorageLocation(storageLocation);
         }
+        if (!StringUtils.isEmpty(overtimeDate)) {
+            Date date = null;
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(overtimeDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            order.setOvertimeDate(date);
+        }
+        if (!StringUtils.isEmpty(labelNumber)) {
+            order.setLabelNumber(labelNumber);
+        }
+        if (!StringUtils.isEmpty(userRemark)) {
+            order.setUserRemark(userRemark);
+        }
         return updateById(order);
     }
 
@@ -157,8 +176,14 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     public int refreshOrderStatus(LmsOrder order) {
         if (!order.getOrderAction().equals("-1") && !order.getOrderAction().equals("0")
                 && !order.getOrderAction().equals("4") && !order.getOrderAction().equals("7")
-                && !ObjectUtils.isEmpty(order.getWeight()) && order.getOrderStatus().equals(4)) {
+                && !ObjectUtils.isEmpty(order.getWeight()) && order.getOrderStatus().equals(4)
+                && ObjectUtils.isEmpty(order.getPrice())) {
             return 0;
+        } else if (!order.getOrderAction().equals("-1") && !order.getOrderAction().equals("0")
+                && !order.getOrderAction().equals("4") && !order.getOrderAction().equals("7")
+                && !ObjectUtils.isEmpty(order.getWeight()) && order.getOrderStatus().equals(4)
+                && !ObjectUtils.isEmpty(order.getPrice())) {
+            return 1;
         } else {
             return order.getOrderStatus();
         }
