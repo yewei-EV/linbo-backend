@@ -43,6 +43,11 @@ public interface LmsOrderService extends IService<LmsOrder> {
     boolean checkIfPaid(Long itemId);
 
     /**
+     * 完成订单
+     */
+    void finishOrder(Long itemId);
+
+    /**
      * 获取订单数量
      */
     Long fetchOrderCount(String date, List<Integer> statuses);

@@ -96,4 +96,7 @@ public class LmsOrder implements Serializable {
     @ApiModelProperty(value = "用户备注")
     private String userRemark;
 
+    @ApiModelProperty(value = "顺丰运费")
+    private BigDecimal sfPrice;
+
 }

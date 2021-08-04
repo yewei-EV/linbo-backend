@@ -114,6 +114,20 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     }
 
     @Override
+    public void finishOrder(Long itemId) {
+        QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(LmsOrderItemRelation::getItemId, itemId);
+        List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
+        if (!CollectionUtils.isEmpty(list)) {
+            LmsOrder order = this.getById(list.get(0).getOrderId());
+            if (order.getOrderStatus().equals(2)) {
+                order.setOrderStatus(3);
+                updateById(order);
+            }
+        }
+    }
+
+    @Override
     public Long fetchOrderCount(String date, List<Integer> statuses) {
         QueryWrapper<LmsOrder> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<LmsOrder> lambda = wrapper.lambda();
@@ -183,6 +197,9 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                 && !order.getOrderAction().equals("4") && !order.getOrderAction().equals("7")
                 && !ObjectUtils.isEmpty(order.getWeight()) && order.getOrderStatus().equals(4)
                 && !ObjectUtils.isEmpty(order.getPrice())) {
+            return 1;
+        } else if (order.getOrderAction().equals("9") && order.getOrderStatus().equals(2)
+                && !ObjectUtils.isEmpty(order.getSfPrice())) {
             return 1;
         } else {
             return order.getOrderStatus();
