@@ -163,14 +163,14 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                         item.setItemStatus(3);
                 }
         } else if (item.getItemStatus() == 4) {
-            item.setItemStatus(10);
+            item.setItemStatus(21);
         } else if (item.getItemStatus() == 5 || item.getItemStatus() == 6
                 || item.getItemStatus() == 7 || item.getItemStatus() == 9 || item.getItemStatus() == 20) {
             item.setItemStatus(10);
             lmsOrderService.finishOrder(item.getId());
         } else if (item.getItemStatus() == 8) {
             item.setItemStatus(11);
-        } else if (item.getItemStatus() == 10) {
+        } else if (item.getItemStatus() == 21) {
             item.setItemStatus(12);
         } else if (item.getItemStatus() == 11) {
             // 已海外寄存
