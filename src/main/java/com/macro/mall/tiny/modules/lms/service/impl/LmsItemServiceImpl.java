@@ -21,6 +21,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Date;
 
@@ -292,7 +293,14 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             lambda.in(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatuses());
         } else if (lmsItemQueryParam.getItemStatus()!=null){
             lambda.eq(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatus());
+        } else if (CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses()) && lmsItemQueryParam.getItemStatus()==null) {
+            if (lmsItemQueryParam.getRequestBy().equals("CN")) {
+                lambda.in(LmsItem::getItemStatus, Arrays.asList(21,12,13,14,15,16,17,18));
+            } else {
+                lambda.in(LmsItem::getItemStatus, Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,20));
+            }
         }
+
         if (StrUtil.isNotEmpty(lmsItemQueryParam.getPositionInfo())) {
             lambda.like(LmsItem::getPositionInfo, lmsItemQueryParam.getPositionInfo());
         }

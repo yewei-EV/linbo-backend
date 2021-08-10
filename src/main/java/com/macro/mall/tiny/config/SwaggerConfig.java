@@ -17,8 +17,8 @@ public class SwaggerConfig extends BaseSwaggerConfig {
     public SwaggerProperties swaggerProperties() {
         return SwaggerProperties.builder()
                 .apiBasePackage("com.macro.mall.tiny.modules")
-                .title("mall-tiny项目骨架")
-                .description("mall-tiny项目骨架相关接口文档")
+                .title("linbo-backend项目骨架")
+                .description("linbo-backend项目骨架相关接口文档")
                 .contactName("macro")
                 .version("1.0")
                 .enableSecurity(true)

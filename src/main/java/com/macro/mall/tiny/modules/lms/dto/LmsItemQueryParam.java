@@ -31,6 +31,8 @@ public class LmsItemQueryParam {
     private String sku;
     @ApiModelProperty(value = "尺寸")
     private String size;
+    @ApiModelProperty(value = "请求方")
+    private String requestBy;
     @ApiModelProperty(value = "包裹状态")
     private Integer itemStatus;
     @ApiModelProperty(value = "包裹多种状态")
