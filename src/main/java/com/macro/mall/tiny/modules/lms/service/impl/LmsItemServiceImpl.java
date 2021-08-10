@@ -76,7 +76,11 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
     @Override
     public String updateItemStatus(LmsItem item, String orderAction) {
         if (!StringUtils.isEmpty(orderAction) && (item.getItemStatus() == 0 || item.getItemStatus() == 1)) {
-            item.setItemStatus(2);
+            if (orderAction.equals("2") || orderAction.equals("3") || orderAction.equals("5")) {
+                item.setItemStatus(3);
+            } else {
+                item.setItemStatus(2);
+            }
         } else if (item.getItemStatus() == 2) {
             switch (orderAction) {
                 case "0":
@@ -293,7 +297,8 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             lambda.in(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatuses());
         } else if (lmsItemQueryParam.getItemStatus()!=null){
             lambda.eq(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatus());
-        } else if (CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses()) && lmsItemQueryParam.getItemStatus()==null) {
+        } else if (CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses()) && lmsItemQueryParam.getItemStatus()==null
+                && !StringUtils.isEmpty(lmsItemQueryParam.getRequestBy())) {
             if (lmsItemQueryParam.getRequestBy().equals("CN")) {
                 lambda.in(LmsItem::getItemStatus, Arrays.asList(21,12,13,14,15,16,17,18));
             } else {
@@ -422,14 +427,14 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 if (lmsOrderService.checkIfPaid(item.getId())) {
                     item.setItemStatus(6);
                 } else {
-                    item.setItemStatus(2);
+                    item.setItemStatus(3);
                 }
                 break;
             case "3":
                 if (lmsOrderService.checkIfPaid(item.getId())) {
                     item.setItemStatus(7);
                 } else {
-                    item.setItemStatus(2);
+                    item.setItemStatus(3);
                 }
                 break;
             case "4":
@@ -439,7 +444,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 if (lmsOrderService.checkIfPaid(item.getId())) {
                     item.setItemStatus(9);
                 } else {
-                    item.setItemStatus(2);
+                    item.setItemStatus(3);
                 }
                 break;
             case "6":

@@ -152,6 +152,12 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
             order.setOrderAction(orderAction);
             if (!orderAction.equals("-1") && !orderAction.equals("0") && !orderAction.equals("4")
                     && !orderAction.equals("7") && !ObjectUtils.isEmpty(order.getWeight())) {
+                //待定价
+                order.setOrderStatus(0);
+            } else if (orderAction.equals("2") || orderAction.equals("3") || orderAction.equals("5")) {
+                //待支付
+//                order.setPrice(BigDecimal.valueOf(28));
+//                order.setOrderStatus(1);
                 order.setOrderStatus(0);
             }
         }
