@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.macro.mall.tiny.modules.lms.mapper.LmsItemMapper">
+<mapper namespace="com.ev.linbo.backend.modules.lms.mapper.LmsItemMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.macro.mall.tiny.modules.lms.model.LmsItem">
+    <resultMap id="BaseResultMap" type="com.ev.linbo.backend.modules.lms.model.LmsItem">
         <id column="id" property="id" />
         <result column="locator" property="locator" />
         <result column="delivery_sn" property="deliverySn" />

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.macro.mall.tiny.modules.lms.mapper.LmsOrderMapper">
+<mapper namespace="com.ev.linbo.backend.modules.lms.mapper.LmsOrderMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.macro.mall.tiny.modules.lms.model.LmsOrder">
+    <resultMap id="BaseResultMap" type="com.ev.linbo.backend.modules.lms.model.LmsOrder">
         <id column="id" property="id" />
         <result column="order_action" property="orderAction" />
         <result column="weight" property="weight" />
@@ -23,7 +23,7 @@
         <result column="archived" property="archived" />
     </resultMap>
 
-    <select id="getOrderList" resultType="com.macro.mall.tiny.modules.lms.model.LmsOrder">
+    <select id="getOrderList" resultType="com.ev.linbo.backend.modules.lms.model.LmsOrder">
         select o.*
         from lms_order_item_relation oi left join lms_order o on oi.order_id = o.id
         where oi.item_id = #{itemId}
@@ -35,7 +35,7 @@
         where location = #{location} and payment_time > #{date} and archived = false
     </select>
 
-    <select id="getPreciseOrderList" resultType="com.macro.mall.tiny.modules.lms.model.LmsOrder">
+    <select id="getPreciseOrderList" resultType="com.ev.linbo.backend.modules.lms.model.LmsOrder">
         select *
         from lms_order
         where delivery_sn = #{deliverySn} and user_sn = #{userSn} and archived = false
