@@ -9,4 +9,10 @@ public interface CommonService {
      * oss上传成功回调
      */
     String generateRandomStringBySeed(final int seed);
+
+    /**
+     * 邮件发送
+     */
+    Boolean sendEmail(String target, String content);
+
 }

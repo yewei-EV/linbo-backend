@@ -9,6 +9,17 @@ spring:
     port: 6379 # Redis服务器连接端口
     password: # Redis服务器连接密码（默认为空）
     timeout: 3000ms # 连接超时时间（毫秒）
+  mail:
+    host: smtp.mxhichina.com
+    password: Hypeeyes123
+    username: contact@hypeeyes.com
+    port: 25
+    test-connection: false
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.socketFactory.fallback: true
+      mail.smtp.starttls.enable: true
 
 logging:
   file:

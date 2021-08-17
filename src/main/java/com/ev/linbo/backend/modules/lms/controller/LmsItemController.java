@@ -42,7 +42,7 @@ public class LmsItemController {
         this.lmsOrderMapper = lmsOrderMapper;
     }
 
-    @ApiOperation("添加货物")
+    @ApiOperation("添加包裹")
     @OperateLog(module="包裹管理-包裹新增",operateType="OPERATE_ADD",operation="包裹新增功能")
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseBody

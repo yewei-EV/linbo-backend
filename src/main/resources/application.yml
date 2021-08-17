@@ -5,7 +5,18 @@ spring:
   application:
     name: mall-tiny
   profiles:
-    active: prod 
+    active: prod
+  mail:
+    host: smtp.mxhichina.com
+    password: Hypeeyes123
+    username: contact@hypeeyes.com
+    port: 25
+    test-connection: false
+    protocol: smtps
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.socketFactory.fallback: true
+      mail.smtp.starttls.enable: true
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
