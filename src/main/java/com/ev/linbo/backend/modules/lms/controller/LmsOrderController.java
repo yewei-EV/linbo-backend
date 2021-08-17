@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ev.linbo.backend.common.api.CommonPage;
 import com.ev.linbo.backend.common.api.CommonResult;
 import com.ev.linbo.backend.modules.lms.dto.LmsOrderCountParam;
+import com.ev.linbo.backend.modules.lms.mapper.LmsOrderMapper;
 import com.ev.linbo.backend.modules.lms.model.LmsOrder;
 import com.ev.linbo.backend.modules.lms.service.LmsOrderService;
 import com.ev.linbo.backend.security.annotation.OperateLog;
@@ -31,8 +32,11 @@ public class LmsOrderController {
 
     private final LmsOrderService lmsOrderService;
 
-    public LmsOrderController(LmsOrderService lmsOrderService) {
+    private final LmsOrderMapper lmsOrderMapper;
+
+    public LmsOrderController(LmsOrderService lmsOrderService, LmsOrderMapper lmsOrderMapper) {
         this.lmsOrderService = lmsOrderService;
+        this.lmsOrderMapper = lmsOrderMapper;
     }
 
     @ApiOperation("添加订单")
@@ -40,9 +44,12 @@ public class LmsOrderController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult create(@RequestBody LmsOrder order) {
-        boolean success = lmsOrderService.create(order);
-        if (success) {
-            return CommonResult.success(order.getId());
+        List<LmsOrder> orders = lmsOrderMapper.getPreciseOrderList(order.getDeliverySn(), order.getUserSn());
+        if (orders.size() <= 0) {
+            boolean success = lmsOrderService.create(order);
+            if (success) {
+                return CommonResult.success(order.getId());
+            }
         }
         return CommonResult.failed();
     }
