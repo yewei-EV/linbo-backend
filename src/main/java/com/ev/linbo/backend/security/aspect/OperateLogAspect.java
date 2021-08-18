@@ -142,8 +142,7 @@ public class OperateLogAspect {
             //操作时间
             Date beforeDate = new Date();
             Long startTime = beforeDate.getTime();
-            LocalDateTime now = LocalDateTime.now();
-            operateLogInfo.setExecuteTime(now);
+            operateLogInfo.setExecuteTime(beforeDate);
             responseObj = pjp.proceed();
             Date afterDate = new Date();
             Long endTime = afterDate.getTime();
@@ -167,7 +166,7 @@ public class OperateLogAspect {
 
     private void insertIntoLogTable(OperateLogInfo operateLogInfo){
         operateLogInfo.setId(UUID.randomUUID().toString().replace("-",""));
-        String sql="insert into action_log values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String sql="insert into operate_log values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         jdbcTemplate.update(sql,operateLogInfo.getId(), operateLogInfo.getUserName(),
                 operateLogInfo.getOperation(),operateLogInfo.getMethod(),
                 operateLogInfo.getModifiedData(),operateLogInfo.getPreModifiedData(),

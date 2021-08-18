@@ -95,6 +95,14 @@ public class LmsItemController {
         return CommonResult.success(null);
     }
 
+    @ApiOperation("获取订单对应的所有包裹")
+    @RequestMapping(value = "/fetchRelatedItemsByOrder", method = RequestMethod.GET)
+    @ResponseBody
+    public CommonResult<List<LmsItem>> fetchRelatedItemsByOrder(@RequestParam(value = "orderId") Long orderId) {
+        List<LmsItem> items = lmsItemService.getItemListByOrder(orderId);
+        return CommonResult.success(items);
+    }
+
     @ApiOperation("批量删除货物")
     @OperateLog(module="包裹管理-删除包裹",operateType="OPERATE_DEL",operation="包裹删除功能")
     @RequestMapping(value = "/delete", method = RequestMethod.POST)

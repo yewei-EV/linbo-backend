@@ -14,8 +14,6 @@ public class OperateLogInfo {
     //主键id
     @TableId
     private String id;
-    //操作人id
-    private String userId;
     //操作人名称
     private String userName;
     //操作内容
@@ -33,7 +31,7 @@ public class OperateLogInfo {
     //报错堆栈信息
     private String errorStackTrace;
     //开始执行时间
-    private LocalDateTime executeTime;
+    private Date executeTime;
     //执行持续时间
     private Long duration;
     //ip
