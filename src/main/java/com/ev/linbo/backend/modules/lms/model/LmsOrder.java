@@ -68,6 +68,9 @@ public class LmsOrder implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
+    @ApiModelProperty(value = "更新时间")
+    private Date updateTime;
+
     @ApiModelProperty(value = "订单状态")
     private Integer orderStatus;
 
