@@ -78,6 +78,8 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         if (!StringUtils.isEmpty(orderAction) && (item.getItemStatus() == 0 || item.getItemStatus() == 1)) {
             if (orderAction.equals("2") || orderAction.equals("3") || orderAction.equals("5")) {
                 item.setItemStatus(3);
+            } else if (orderAction.equals("4")) {
+                item.setItemStatus(8);
             } else {
                 item.setItemStatus(2);
             }
