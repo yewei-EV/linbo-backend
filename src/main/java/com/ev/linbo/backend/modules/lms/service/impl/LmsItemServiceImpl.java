@@ -80,6 +80,8 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 item.setItemStatus(3);
             } else if (orderAction.equals("4")) {
                 item.setItemStatus(8);
+            } else if (item.getItemStatus() == 0) {
+                item.setItemStatus(1);
             } else {
                 item.setItemStatus(2);
             }
