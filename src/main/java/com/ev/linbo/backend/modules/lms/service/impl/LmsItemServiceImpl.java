@@ -301,12 +301,13 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             lambda.in(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatuses());
         } else if (lmsItemQueryParam.getItemStatus()!=null){
             lambda.eq(LmsItem::getItemStatus, lmsItemQueryParam.getItemStatus());
-        } else if (CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses()) && lmsItemQueryParam.getItemStatus()==null
-                && !StringUtils.isEmpty(lmsItemQueryParam.getRequestBy())) {
-            if (lmsItemQueryParam.getRequestBy().equals("CN")) {
+        } else if (CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses()) && lmsItemQueryParam.getItemStatus()==null) {
+            if (!StringUtils.isEmpty(lmsItemQueryParam.getRequestBy()) && lmsItemQueryParam.getRequestBy().equals("CN")) {
                 lambda.in(LmsItem::getItemStatus, Arrays.asList(21,12,13,14,15,16,17,18));
-            } else {
+            } else if (!StringUtils.isEmpty(lmsItemQueryParam.getRequestBy()) && lmsItemQueryParam.getRequestBy().equals("OS")) {
                 lambda.in(LmsItem::getItemStatus, Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,20));
+            } else {
+                lambda.in(LmsItem::getItemStatus, Arrays.asList(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21));
             }
         }
 
