@@ -216,7 +216,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                     }
                     break;
                 default:
-                    item.setItemStatus(3);
+                    item.setItemStatus(11);
             }
         } else if (item.getItemStatus() == 12) {
             switch (orderAction) {
