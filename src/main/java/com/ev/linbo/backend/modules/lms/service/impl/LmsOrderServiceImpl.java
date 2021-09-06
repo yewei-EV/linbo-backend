@@ -159,11 +159,32 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                 order.setOrderStatus(0);
             } else if (orderAction.equals("2") || orderAction.equals("3") || orderAction.equals("5")) {
                 //待支付
-                if (order.getLocation().equals("US1")) {
-                    order.setPrice(BigDecimal.valueOf(28));
-                    order.setOrderStatus(1);
-                } else {
-                    order.setOrderStatus(0);
+                switch (order.getLocation()) {
+                    case "US1":
+                    case "US2":
+                    case "JP":
+                        order.setPrice(BigDecimal.valueOf(28));
+                        order.setOrderStatus(1);
+                        break;
+                    case "CA":
+                        order.setPrice(BigDecimal.valueOf(30));
+                        order.setOrderStatus(1);
+                        break;
+                    case "DE":
+                    case "NL":
+                    case "SP":
+                    case "IT":
+                        order.setPrice(BigDecimal.valueOf(35));
+                        order.setOrderStatus(1);
+                        break;
+                    case "AU":
+                    case "HK":
+                        order.setPrice(BigDecimal.valueOf(40));
+                        order.setOrderStatus(1);
+                        break;
+                    default:
+                        order.setOrderStatus(0);
+                        break;
                 }
             }
         }
