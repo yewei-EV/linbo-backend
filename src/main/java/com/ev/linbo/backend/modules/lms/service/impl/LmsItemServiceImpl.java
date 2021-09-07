@@ -240,13 +240,14 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 default:
                     item.setItemStatus(12);
             }
-        } else if (item.getItemStatus() == 13 || item.getItemStatus() == 14) {
+        } else if (item.getItemStatus() == 13) {
+            item.setItemStatus(22);
+        } else if (item.getItemStatus() == 14) {
             item.setItemStatus(16);
             lmsOrderService.finishOrder(item.getId());
         } else if (item.getItemStatus() == 15) {
             item.setItemStatus(17);
-        }
-        else if (item.getItemStatus() == 17) {
+        } else if (item.getItemStatus() == 17) {
             // 已国内寄存
             switch (orderAction) {
                 case "6":
@@ -264,6 +265,11 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                     }
                     break;
             }
+        } else if (item.getItemStatus() == 22) {
+            item.setItemStatus(23);
+        } else if (item.getItemStatus() == 23) {
+            item.setItemStatus(24);
+
         }
         return this.updateById(item)?"成功":"失败";
     }
@@ -304,7 +310,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         } else if (CollectionUtils.isEmpty(lmsItemQueryParam.getItemStatuses()) && lmsItemQueryParam.getItemStatus()==null
                 && !StringUtils.isEmpty(lmsItemQueryParam.getRequestBy())) {
             if (lmsItemQueryParam.getRequestBy().equals("CN")) {
-                lambda.in(LmsItem::getItemStatus, Arrays.asList(21,12,13,14,15,16,17,18));
+                lambda.in(LmsItem::getItemStatus, Arrays.asList(21,12,13,14,15,16,17,18,22,23,24));
             } else {
                 lambda.in(LmsItem::getItemStatus, Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,20));
             }
@@ -455,7 +461,10 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 if (lmsOrderService.checkIfPaid(item.getId())) {
                     item.setItemStatus(13);
                 } else {
-                    item.setItemStatus(12);
+                    if (!item.getItemStatus().equals(13) && !item.getItemStatus().equals(22)
+                            && !item.getItemStatus().equals(23) && !item.getItemStatus().equals(24)) {
+                        item.setItemStatus(12);
+                    }
                 }
                 break;
             case "7":

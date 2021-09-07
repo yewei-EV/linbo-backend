@@ -81,9 +81,11 @@ public class LmsOrderController {
                                      @RequestParam(value = "storageLocation") String storageLocation,
                                      @RequestParam(value = "overtimeDate") String overtimeDate,
                                      @RequestParam(value = "labelNumber")  String labelNumber,
-                                     @RequestParam(value = "userRemark")  String userRemark) {
+                                     @RequestParam(value = "userRemark")  String userRemark,
+                                     @RequestParam(value = "chinaSize")  String chinaSize,
+                                     @RequestParam(value = "isFollowPrice") Boolean isFollowPrice) {
         boolean success = lmsOrderService.updateByUser(id, orderAction, destination, attachment, storageDays,
-                storageLocation, overtimeDate, labelNumber, userRemark);
+                storageLocation, overtimeDate, labelNumber, userRemark, chinaSize, isFollowPrice);
         if (success) {
             return CommonResult.success(null);
         }

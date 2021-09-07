@@ -107,4 +107,52 @@ public class LmsOrder implements Serializable {
     @ApiModelProperty(value = "顺丰运费")
     private BigDecimal sfPrice;
 
+    @ApiModelProperty(value = "国内尺码")
+    private String chinaSize;
+
+    @ApiModelProperty(value = "代卖上线时间")
+    private Date onlineDate;
+
+    @ApiModelProperty(value = "卖出时间")
+    private Date soldDate;
+
+    @ApiModelProperty(value = "商品价格")
+    private BigDecimal soldPrice;
+
+    @ApiModelProperty(value = "技术服务费率")
+    private BigDecimal techServiceFeePercentage;
+
+    @ApiModelProperty(value = "技术服务费")
+    private BigDecimal techServiceFee;
+
+    @ApiModelProperty(value = "转账手续费")
+    private BigDecimal transactionFee;
+
+    @ApiModelProperty(value = "查鉴包")
+    private BigDecimal duServiceFee;
+
+    @ApiModelProperty(value = "售后无忧费")
+    private BigDecimal afterSaleServiceFee;
+
+    @ApiModelProperty(value = "运费+手续费")
+    private BigDecimal totalServiceFee;
+
+    @ApiModelProperty(value = "用户到手价格")
+    private BigDecimal userOwnPrice;
+
+    @ApiModelProperty(value = "实际入账价格")
+    private BigDecimal realSalePrice;
+
+    @ApiModelProperty(value = "实际技术服务费")
+    private BigDecimal realTechServiceFee;
+
+    @ApiModelProperty(value = "实际利润")
+    private BigDecimal realProfit;
+
+    @ApiModelProperty(value = "是否跟价")
+    private Boolean isFollowPrice;
+
+    @ApiModelProperty(value = "结算时间")
+    private Date clearDate;
+
 }

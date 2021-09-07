@@ -56,7 +56,8 @@ public interface LmsOrderService extends IService<LmsOrder> {
      * 用户修改订单
      */
     boolean updateByUser(Long id, String orderAction, String destination, String attachment, Integer storageDays,
-                         String storageLocation, String overtimeDate, String labelNumber, String userRemark);
+                         String storageLocation, String overtimeDate, String labelNumber, String userRemark,
+                         String chinaSize, Boolean isFollowPrice);
 
     /**
      * 刷新订单状态

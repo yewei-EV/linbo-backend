@@ -147,7 +147,7 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
     @Override
     public boolean updateByUser(Long id, String orderAction, String destination, String attachment,
                                 Integer storageDays, String storageLocation, String overtimeDate, String labelNumber,
-                                String userRemark) {
+                                String userRemark, String chinaSize, Boolean isFollowPrice) {
         LmsOrder order = this.getById(id);
         if (!StringUtils.isEmpty(orderAction) && (order.getOrderAction().equals("-1")
                 || order.getOrderAction().equals("4") || order.getOrderAction().equals("7"))
@@ -200,6 +200,12 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
         }
         if (!StringUtils.isEmpty(storageLocation)) {
             order.setStorageLocation(storageLocation);
+        }
+        if (!StringUtils.isEmpty(chinaSize)) {
+            order.setChinaSize(chinaSize);
+        }
+        if (!ObjectUtils.isEmpty(isFollowPrice)) {
+            order.setIsFollowPrice(isFollowPrice);
         }
         if (!StringUtils.isEmpty(overtimeDate)) {
             Date date = null;
