@@ -478,6 +478,9 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 }
                 break;
             case "9":
+                if (item.getItemStatus().equals(16)) {
+                    break;
+                }
                 if (lmsOrderService.checkIfPaid(item.getId())) {
                     item.setItemStatus(14);
                 } else {
