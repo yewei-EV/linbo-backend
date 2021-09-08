@@ -24,8 +24,11 @@ import com.ev.linbo.backend.modules.payment.entity.AlipayBean;
 import com.ev.linbo.backend.modules.payment.entity.AlipayNotifyParam;
 import com.ev.linbo.backend.modules.payment.entity.AlipayParam;
 import com.ev.linbo.backend.modules.payment.service.PaymentService;
+import com.ev.linbo.backend.security.component.JwtAuthenticationTokenFilter;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +45,8 @@ import java.util.concurrent.Executors;
 @Api(tags = "AlipayController", description = "付款管理")
 @RequestMapping("/alipay")
 public class PaymentController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentController.class);
 
     private final AlipayConfig alipayConfig;
 
@@ -88,14 +93,14 @@ public class PaymentController {
     public String callback(HttpServletRequest request) {
         Map<String, String> params = convertRequestParamsToMap(request); // 将异步通知中收到的待验证所有参数都存放到map中
         String paramsJson = JSON.toJSONString(params);
-        System.out.println("支付宝回调，" + paramsJson);
+        LOGGER.info("支付宝回调:{}", paramsJson);
         try {
             AlipayConfig alipayConfig = new AlipayConfig();// 支付宝配置
             // 调用SDK验证签名
             boolean signVerified = AlipaySignature.rsaCheckV2(params, alipayConfig.getAlipay_public_key(),
                     alipayConfig.getCharset(), alipayConfig.getSign_type());
             if (signVerified) {
-                System.out.println("支付宝回调签名认证成功");
+                LOGGER.info("支付宝回调签名认证成功");
                 // 按照支付结果异步通知中的描述，对支付结果中的业务内容进行1\2\3\4二次校验，校验成功后在response中返回success，校验失败返回failure
                 this.check(params);
                 // 另起线程处理业务
@@ -122,21 +127,21 @@ public class PaymentController {
                                 lmsItemService.refreshItemStatus(item, order.getOrderAction());
                             }
                         } catch (Exception e) {
-                            System.out.println("支付宝回调业务处理报错,params:" + paramsJson + e);
+                            LOGGER.info("支付宝回调业务处理报错,params:{}, e:{}", paramsJson, e);
                         }
                     } else {
-                        System.out.println("没有处理支付宝回调业务，支付宝交易状态：{},params:{}" + trade_status + paramsJson);
+                        LOGGER.info("没有处理支付宝回调业务，支付宝交易状态：{}, params:{}", trade_status, paramsJson);
                     }
                 });
                 // 如果签名验证正确，立即返回success，后续业务另起线程单独处理
                 // 业务处理失败，可查看日志进行补偿，跟支付宝已经没多大关系。
                 return "success";
             } else {
-                System.out.println("支付宝回调签名认证失败，signVerified=false, paramsJson:{}" + paramsJson);
+                LOGGER.info("支付宝回调签名认证失败，signVerified=false, paramsJson:{}", paramsJson);
                 return "failure";
             }
         } catch (AlipayApiException e) {
-            System.out.println("支付宝回调签名认证失败,paramsJson:{},errorMsg:{}" + paramsJson + e.getMessage());
+            LOGGER.info("支付宝回调签名认证失败,paramsJson:{},errorMsg:{}", paramsJson, e.getMessage());
             return "failure";
         }
     }
