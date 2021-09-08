@@ -119,7 +119,7 @@ public class PaymentController {
                             lmsOrderService.save(order);
                             List<LmsItem> items = lmsItemService.getItemListByOrder(order.getId());
                             for (LmsItem item : items) {
-                                lmsItemService.updateItemStatus(item, order.getOrderAction());
+                                lmsItemService.refreshItemStatus(item, order.getOrderAction());
                             }
                         } catch (Exception e) {
                             System.out.println("支付宝回调业务处理报错,params:" + paramsJson + e);
