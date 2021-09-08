@@ -97,7 +97,7 @@ public class PaymentController {
         try {
             AlipayConfig alipayConfig = new AlipayConfig();// 支付宝配置
             // 调用SDK验证签名
-            boolean signVerified = AlipaySignature.rsaCheckV2(params, alipayConfig.getAlipay_public_key(),
+            boolean signVerified = AlipaySignature.rsaCheckV1(params, alipayConfig.getAlipay_public_key(),
                     alipayConfig.getCharset(), alipayConfig.getSign_type());
             if (signVerified) {
                 LOGGER.info("支付宝回调签名认证成功");
