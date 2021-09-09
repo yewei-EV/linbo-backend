@@ -112,6 +112,7 @@ public class PaymentController {
                         // 处理支付成功逻辑
                         try {
                             // 业务逻辑
+                            LOGGER.info("order ID:{}", params.get("out_trade_no"));
                             LmsOrder order = lmsOrderService.getById(params.get("out_trade_no"));
                             order.setOrderStatus(2);
                             if (StringUtils.isEmpty(order.getNote())) {
@@ -120,6 +121,7 @@ public class PaymentController {
                                 order.setNote(order.getNote() + "," + params.get("trade_no"));
                             }
                             order.setPaymentTime(new Date());
+                            LOGGER.info("Save order:{}", order);
                             lmsOrderService.save(order);
                             List<LmsItem> items = lmsItemService.getItemListByOrder(order.getId());
                             for (LmsItem item : items) {
