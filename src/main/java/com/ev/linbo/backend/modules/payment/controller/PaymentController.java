@@ -35,6 +35,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Yewei Wang
@@ -53,6 +55,8 @@ public class PaymentController {
     private final LmsOrderService lmsOrderService;
 
     private final LmsItemService lmsItemService;
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(20);
 
     public PaymentController(AlipayConfig alipayConfig, PaymentService paymentService, LmsOrderService lmsOrderService, LmsItemService lmsItemService) {
         this.alipayConfig = alipayConfig;
@@ -98,36 +102,39 @@ public class PaymentController {
                 LOGGER.info("支付宝回调签名认证成功");
                 // 按照支付结果异步通知中的描述，对支付结果中的业务内容进行1\2\3\4二次校验，校验成功后在response中返回success，校验失败返回failure
                 this.check(params);
-                AlipayNotifyParam param = buildAlipayNotifyParam(params);
-                String trade_status = param.getTradeStatus();
-                // 支付成功
-                if (trade_status.equals("TRADE_SUCCESS")
-                        || trade_status.equals("TRADE_FINISHED")) {
-                    // 处理支付成功逻辑
-                    try {
-                        // 业务逻辑
-                        LOGGER.info("order ID:{}", params.get("out_trade_no"));
-                        LmsOrder order = lmsOrderService.getById(params.get("out_trade_no"));
-                        order.setOrderStatus(2);
-                        if (StringUtils.isEmpty(order.getNote())) {
-                            order.setNote(params.get("trade_no"));
-                        } else {
-                            order.setNote(order.getNote() + "," + params.get("trade_no"));
+                // 另起线程处理业务
+                executorService.execute(() -> {
+                    AlipayNotifyParam param = buildAlipayNotifyParam(params);
+                    String trade_status = param.getTradeStatus();
+                    // 支付成功
+                    if (trade_status.equals("TRADE_SUCCESS")
+                            || trade_status.equals("TRADE_FINISHED")) {
+                        // 处理支付成功逻辑
+                        try {
+                            // 业务逻辑
+                            LOGGER.info("order ID:{}", params.get("out_trade_no"));
+                            LmsOrder order = lmsOrderService.getById(params.get("out_trade_no"));
+                            order.setOrderStatus(2);
+                            if (StringUtils.isEmpty(order.getNote())) {
+                                order.setNote(params.get("trade_no"));
+                            } else {
+                                order.setNote(order.getNote() + "," + params.get("trade_no"));
+                            }
+                            order.setPaymentTime(new Date());
+                            LOGGER.info("Save order:{}", order);
+                            lmsOrderService.updateById(order);
+                            List<LmsItem> items = lmsItemService.getItemListByOrder(order.getId());
+                            for (LmsItem item : items) {
+                                lmsItemService.refreshItemStatus(item, order.getOrderAction());
+                            }
+                        } catch (Exception e) {
+                            LOGGER.info("支付宝回调业务处理报错,params:{}, e:{}", paramsJson, e);
                         }
-                        order.setPaymentTime(new Date());
-                        LOGGER.info("Save order:{}", order);
-                        lmsOrderService.save(order);
-                        List<LmsItem> items = lmsItemService.getItemListByOrder(order.getId());
-                        for (LmsItem item : items) {
-                            lmsItemService.refreshItemStatus(item, order.getOrderAction());
-                        }
-                    } catch (Exception e) {
-                        LOGGER.info("支付宝回调业务处理报错,params:{}, e:{}", paramsJson, e);
+                    } else {
+                        LOGGER.info("没有处理支付宝回调业务，支付宝交易状态：{}, params:{}", trade_status, paramsJson);
                     }
-                } else {
-                    LOGGER.info("没有处理支付宝回调业务，支付宝交易状态：{}, params:{}", trade_status, paramsJson);
-                }
-                // 如果签名验证正确，立即返回success
+                });
+                // 如果签名验证正确，立即返回success，后续业务另起线程单独处理
                 // 业务处理失败，可查看日志进行补偿，跟支付宝已经没多大关系。
                 return "success";
             } else {
