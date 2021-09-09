@@ -95,10 +95,9 @@ public class PaymentController {
         String paramsJson = JSON.toJSONString(params);
         LOGGER.info("支付宝回调:{}", paramsJson);
         try {
-            AlipayConfig alipayConfig = new AlipayConfig();// 支付宝配置
             // 调用SDK验证签名
             boolean signVerified = AlipaySignature.rsaCheckV1(params, alipayConfig.getAlipay_public_key(),
-                    alipayConfig.getCharset(), "RSA2");
+                    alipayConfig.getCharset(), alipayConfig.getSign_type());
             if (signVerified) {
                 LOGGER.info("支付宝回调签名认证成功");
                 // 按照支付结果异步通知中的描述，对支付结果中的业务内容进行1\2\3\4二次校验，校验成功后在response中返回success，校验失败返回failure
