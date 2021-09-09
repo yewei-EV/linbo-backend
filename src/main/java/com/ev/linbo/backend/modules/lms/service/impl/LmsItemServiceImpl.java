@@ -221,7 +221,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
         } else if (item.getItemStatus() == 12) {
             switch (orderAction) {
                 case "6":
-                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                    if (lmsOrderService.checkIfPaid(item.getId()) || item.getLocation().equals("CN")) {
                         item.setItemStatus(13);
                     } else {
                         item.setItemStatus(12);
@@ -251,7 +251,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             // 已国内寄存
             switch (orderAction) {
                 case "6":
-                    if (lmsOrderService.checkIfPaid(item.getId())) {
+                    if (lmsOrderService.checkIfPaid(item.getId()) || item.getLocation().equals("CN")) {
                         item.setItemStatus(13);
                     } else {
                         item.setItemStatus(12);
@@ -458,7 +458,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
                 }
                 break;
             case "6":
-                if (lmsOrderService.checkIfPaid(item.getId())) {
+                if (lmsOrderService.checkIfPaid(item.getId()) || item.getLocation().equals("CN")) {
                     item.setItemStatus(13);
                 } else {
                     if (!item.getItemStatus().equals(13) && !item.getItemStatus().equals(22)
