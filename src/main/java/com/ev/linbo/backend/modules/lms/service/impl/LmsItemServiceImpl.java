@@ -312,7 +312,7 @@ public class LmsItemServiceImpl extends ServiceImpl<LmsItemMapper, LmsItem> impl
             if (lmsItemQueryParam.getRequestBy().equals("CN")) {
                 lambda.in(LmsItem::getItemStatus, Arrays.asList(21,12,13,14,15,16,17,18,22,23,24));
             } else {
-                lambda.in(LmsItem::getItemStatus, Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,20));
+                lambda.in(LmsItem::getItemStatus, Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,20,25));
             }
         }
 
