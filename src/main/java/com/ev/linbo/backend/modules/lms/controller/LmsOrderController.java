@@ -118,11 +118,12 @@ public class LmsOrderController {
                                                    @RequestParam(value = "orderStatus", required = false) Integer orderStatus,
                                                    @RequestParam(value = "paymentStatus", required = false) Integer paymentStatus,
                                                    @RequestParam(value = "paymentTime", required = false) String paymentTime,
+                                                   @RequestParam(value = "newDeliverySn", required = false) String newDeliverySn,
                                                    @RequestParam(value = "updateTime", required = false) String updateTime,
                                                    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
         Page<LmsOrder> orderList = lmsOrderService.list(id, orderAction, deliverySn, userSn, destination, note, location,
-                createTime, orderStatus, paymentStatus, paymentTime, updateTime, pageSize, pageNum);
+                createTime, orderStatus, paymentStatus, paymentTime, newDeliverySn, updateTime, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(orderList));
     }
 
