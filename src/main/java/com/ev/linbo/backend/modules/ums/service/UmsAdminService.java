@@ -61,7 +61,7 @@ public interface UmsAdminService extends IService<UmsAdmin> {
     /**
      * 根据用户名或昵称分页查询用户
      */
-    Page<UmsAdmin> list(String keyword, String userSn, String discordId, Integer pageSize, Integer pageNum);
+    Page<UmsAdmin> list(String keyword, String userSn, String wechat, String discordId, Integer pageSize, Integer pageNum);
 
     /**
      * 修改指定用户信息

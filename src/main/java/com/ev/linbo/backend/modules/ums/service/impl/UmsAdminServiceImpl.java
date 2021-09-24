@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -125,11 +126,11 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         String encodePassword = passwordEncoder.encode(umsAdmin.getPassword());
         umsAdmin.setPassword(encodePassword);
 
-        //查询是否有相同的User Sn
+        //查询是否有相同的Discord ID
         QueryWrapper<UmsAdmin> snWrapper = new QueryWrapper<>();
         snWrapper.lambda().eq(UmsAdmin::getDiscordId, umsAdmin.getDiscordId());
         List<UmsAdmin> existUmsAdminList = list(snWrapper);
-        if (existUmsAdminList.size() > 0) {
+        if (existUmsAdminList.size() > 0 && !StringUtils.isEmpty(umsAdmin.getDiscordId())) {
             existUmsAdminList.get(0).setCreateTime(new Date());
             existUmsAdminList.get(0).setUsername(umsAdminParam.getUsername());
             existUmsAdminList.get(0).setPassword(encodePassword);
@@ -220,7 +221,7 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     }
 
     @Override
-    public Page<UmsAdmin> list(String keyword, String userSn, String discordId, Integer pageSize, Integer pageNum) {
+    public Page<UmsAdmin> list(String keyword, String userSn, String wechat, String discordId, Integer pageSize, Integer pageNum) {
         Page<UmsAdmin> page = new Page<>(pageNum,pageSize);
         QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
         LambdaQueryWrapper<UmsAdmin> lambda = wrapper.lambda();
@@ -229,6 +230,9 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         }
         if(StrUtil.isNotEmpty(userSn)){
             lambda.like(UmsAdmin::getUserSn,userSn);
+        }
+        if(StrUtil.isNotEmpty(wechat)){
+            lambda.like(UmsAdmin::getWechat,wechat);
         }
         if(StrUtil.isNotEmpty(discordId)){
             lambda.like(UmsAdmin::getDiscordId,discordId);

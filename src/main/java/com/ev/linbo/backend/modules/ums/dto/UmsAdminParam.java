@@ -25,6 +25,8 @@ public class UmsAdminParam {
     @Email
     @ApiModelProperty(value = "邮箱")
     private String email;
+    @ApiModelProperty(value = "Wechat ID")
+    private String wechat;
     @ApiModelProperty(value = "Discord ID")
     private String discordId;
     @ApiModelProperty(value = "备注")

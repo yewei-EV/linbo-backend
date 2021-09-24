@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -22,6 +24,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 @TableName("ums_admin")
 @ApiModel(value="UmsAdmin对象", description="后台用户表")
+@Getter
+@Setter
 public class UmsAdmin implements Serializable {
 
     private static final long serialVersionUID=1L;
@@ -38,6 +42,9 @@ public class UmsAdmin implements Serializable {
 
     @ApiModelProperty(value = "邮箱")
     private String email;
+
+    @ApiModelProperty(value = "Wechat")
+    private String wechat;
 
     @ApiModelProperty(value = "Discord ID")
     private String discordId;

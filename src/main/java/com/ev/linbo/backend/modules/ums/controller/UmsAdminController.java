@@ -118,6 +118,7 @@ public class UmsAdminController {
         data.put("region", umsAdmin.getRegion());
         data.put("userSn", umsAdmin.getUserSn());
         data.put("email", umsAdmin.getEmail());
+        data.put("wechat", umsAdmin.getWechat());
         data.put("discordId", umsAdmin.getDiscordId());
         data.put("addressList", adminService.getAddressList(umsAdmin.getId()));
 
@@ -141,10 +142,11 @@ public class UmsAdminController {
     @ResponseBody
     public CommonResult<CommonPage<UmsAdmin>> list(@RequestParam(value = "keyword", required = false) String keyword,
                                                    @RequestParam(value = "userSn", required = false) String userSn,
+                                                   @RequestParam(value = "wechat", required = false) String wechat,
                                                    @RequestParam(value = "discordId", required = false) String discordId,
                                                    @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                    @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
-        Page<UmsAdmin> adminList = adminService.list(keyword, userSn, discordId, pageSize, pageNum);
+        Page<UmsAdmin> adminList = adminService.list(keyword, userSn, wechat, discordId, pageSize, pageNum);
         return CommonResult.success(CommonPage.restPage(adminList));
     }
 
@@ -213,11 +215,13 @@ public class UmsAdminController {
     @RequestMapping(value = "/updateProfileInfo/{id}", method = RequestMethod.POST)
     @ResponseBody
     public CommonResult updateProfileInfo(@PathVariable Long id, @RequestParam(value = "email") String email,
+                                          @RequestParam(value = "wechat") String wechat,
                                           @RequestParam(value = "discordId") String discordId,
                                           @RequestParam(value = "icon") String icon) {
         UmsAdmin umsAdmin = new UmsAdmin();
         umsAdmin.setEmail(email);
         umsAdmin.setDiscordId(discordId);
+        umsAdmin.setWechat(wechat);
         umsAdmin.setIcon(icon);
         boolean success = adminService.update(id, umsAdmin);
         if (success) {

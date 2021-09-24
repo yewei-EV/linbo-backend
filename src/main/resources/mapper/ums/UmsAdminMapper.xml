@@ -10,6 +10,7 @@
         <result column="icon" property="icon" />
         <result column="email" property="email" />
         <result column="discord_id" property="discordId" />
+        <result column="wechat" property="wechat" />
         <result column="note" property="note" />
         <result column="create_time" property="createTime" />
         <result column="login_time" property="loginTime" />
