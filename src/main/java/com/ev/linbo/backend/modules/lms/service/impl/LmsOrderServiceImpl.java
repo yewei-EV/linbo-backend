@@ -161,7 +161,7 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                     && order.getOrderStatus().equals(4)) {
                 //待定价
                 order.setOrderStatus(0);
-            } else if (orderAction.equals("2") || orderAction.equals("3") || orderAction.equals("5")) {
+            } else if (orderAction.equals("2") || orderAction.equals("3")) {
                 //待支付
                 switch (order.getLocation()) {
                     case "US1":
@@ -190,6 +190,9 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                         order.setOrderStatus(0);
                         break;
                 }
+            } else if (orderAction.equals("5")) {
+                // 待定价
+                order.setOrderStatus(0);
             }
         }
         if (!StringUtils.isEmpty(destination) && StringUtils.isEmpty(order.getDestination())
