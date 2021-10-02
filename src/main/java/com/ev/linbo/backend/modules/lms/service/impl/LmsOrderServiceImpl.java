@@ -186,6 +186,10 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                         order.setPrice(BigDecimal.valueOf(40));
                         order.setOrderStatus(1);
                         break;
+                    case "UK":
+                        order.setPrice(BigDecimal.valueOf(60));
+                        order.setOrderStatus(1);
+                        break;
                     default:
                         order.setOrderStatus(0);
                         break;
