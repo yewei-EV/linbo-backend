@@ -166,18 +166,24 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                 switch (order.getLocation()) {
                     case "US1":
                     case "US2":
+                        order.setPrice(BigDecimal.valueOf(35));
+                        order.setOrderStatus(1);
+                        break;
                     case "JP":
                         order.setPrice(BigDecimal.valueOf(28));
                         order.setOrderStatus(1);
                         break;
                     case "CA":
-                        order.setPrice(BigDecimal.valueOf(30));
+                        order.setPrice(BigDecimal.valueOf(40));
                         order.setOrderStatus(1);
                         break;
-                    case "DE":
                     case "NL":
                     case "SP":
                     case "IT":
+                        order.setPrice(BigDecimal.valueOf(45));
+                        order.setOrderStatus(1);
+                        break;
+                    case "DE":
                         order.setPrice(BigDecimal.valueOf(35));
                         order.setOrderStatus(1);
                         break;
