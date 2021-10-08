@@ -64,6 +64,9 @@ public class LmsOrderController {
         order.setId(id);
         order.setUpdateTime(new Date());
         boolean success = lmsOrderService.updateById(order);
+        if (order.getOrderAction().equals("-1") && order.getDeliverySn().split(",").length > 1) {
+            lmsOrderService.separateOrders(order);
+        }
         if (success) {
             return CommonResult.success(null);
         }

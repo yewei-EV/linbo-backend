@@ -29,6 +29,37 @@ import lombok.EqualsAndHashCode;
 @ApiModel(value="LmsOrder对象", description="订单表")
 public class LmsOrder implements Serializable {
 
+    public static LmsOrder copy(LmsOrder order) {
+        LmsOrder newOrder = new LmsOrder();
+        newOrder.archived = order.isArchived();
+        newOrder.orderAction = order.getOrderAction();
+        newOrder.weight = order.getWeight();
+        newOrder.weightUnit = order.getWeightUnit();
+        newOrder.location = order.getLocation();
+        newOrder.amount = 1;
+        newOrder.deliverySn = order.getDeliverySn();
+        newOrder.userSn = order.getUserSn();
+        newOrder.destination = order.getDestination();
+        newOrder.note = order.getNote();
+        newOrder.createTime = order.getCreateTime();
+        newOrder.updateTime = new Date();
+        newOrder.orderStatus = order.getOrderStatus();
+        newOrder.paymentStatus = order.getPaymentStatus();
+        newOrder.paymentTime = order.getPaymentTime();
+        newOrder.price = order.getPrice();
+        newOrder.newDeliverySn = order.getNewDeliverySn();
+        newOrder.attachment = order.getAttachment();
+        newOrder.storageStartTime = order.getStorageStartTime();
+        newOrder.storageDays = order.getStorageDays();
+        newOrder.storageLocation = order.getStorageLocation();
+        newOrder.overtimeDate = order.getOvertimeDate();
+        newOrder.labelNumber = order.getLabelNumber();
+        newOrder.userRemark = order.getUserRemark();
+        newOrder.sfPrice = order.getSfPrice();
+        newOrder.chinaSize = order.getChinaSize();
+        return newOrder;
+    }
+
     private static final long serialVersionUID=1L;
 
     @SelectPrimaryKey

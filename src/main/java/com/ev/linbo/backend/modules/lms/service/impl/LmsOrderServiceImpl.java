@@ -16,6 +16,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -157,7 +158,7 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
                 && !orderAction.equals(order.getOrderAction())) {
             order.setOrderAction(orderAction);
             if (!orderAction.equals("-1") && !orderAction.equals("0") && !orderAction.equals("4")
-                    && !orderAction.equals("6") && !orderAction.equals("7") && !ObjectUtils.isEmpty(order.getWeight())
+                    && !orderAction.equals("7") && !ObjectUtils.isEmpty(order.getWeight())
                     && order.getOrderStatus().equals(4)) {
                 //待定价
                 order.setOrderStatus(0);
@@ -257,6 +258,37 @@ public class LmsOrderServiceImpl extends ServiceImpl<LmsOrderMapper, LmsOrder> i
             return 1;
         } else {
             return order.getOrderStatus();
+        }
+    }
+
+    @Override
+    public void separateOrders(LmsOrder order) {
+        QueryWrapper<LmsOrderItemRelation> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(LmsOrderItemRelation::getOrderId, order.getId());
+        List<LmsOrderItemRelation> list = lmsOrderItemRelationService.list(wrapper);
+        // separate confined order
+        if (!CollectionUtils.isEmpty(list) && list.size() > 1) {
+            int  i = 0;
+            String[] deliverySns = order.getDeliverySn().split(",");
+            if (!ObjectUtils.isEmpty(order.getPrice()) && !order.getPrice().equals(BigDecimal.ZERO)) {
+                order.setPrice(order.getPrice().divide(BigDecimal.valueOf(list.size()), RoundingMode.HALF_UP));
+            }
+            if (!ObjectUtils.isEmpty(order.getWeight()) && !order.getWeight().equals(BigDecimal.ZERO)) {
+                order.setWeight(order.getWeight().divide(BigDecimal.valueOf(list.size()), RoundingMode.HALF_UP));
+            }
+            for (LmsOrderItemRelation relation : list) {
+                Long itemId = relation.getItemId();
+                lmsOrderItemRelationService.removeById(relation.getId());
+                LmsOrderItemRelation itemRelation = new LmsOrderItemRelation();
+                LmsOrder newOrder = LmsOrder.copy(order);
+                newOrder.setDeliverySn(deliverySns[i]);
+                lmsOrderMapper.insert(newOrder);
+                itemRelation.setItemId(itemId);
+                itemRelation.setOrderId(newOrder.getId());
+                lmsOrderItemRelationService.save(itemRelation);
+                i++;
+            }
+            lmsOrderMapper.deleteById(order.getId());
         }
     }
 

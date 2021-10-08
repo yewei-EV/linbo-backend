@@ -64,4 +64,6 @@ public interface LmsOrderService extends IService<LmsOrder> {
      * @return
      */
     int refreshOrderStatus(LmsOrder order);
+
+    void separateOrders(LmsOrder order);
 }
